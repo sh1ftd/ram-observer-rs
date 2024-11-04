@@ -19,10 +19,16 @@ jobs:
         with:
           toolchain: stable
           
+      - name: Get Version
+        id: get_version
+        run: |
+          $version = (Select-String -Path Cargo.toml -Pattern '^version = "(.*?)"').Matches.Groups[1].Value
+          echo "version=$version" >> $env:GITHUB_OUTPUT
+          
       - name: Build Release
         run: cargo build --release
         
-      - name: Create Release ZIP
+      - name: Create ZIP
         run: |
           cd target/release
           7z a ../../ram-observer-windows.zip ram-observer-rs.exe
@@ -33,5 +39,6 @@ jobs:
         with:
           files: ram-observer-windows.zip
           generate_release_notes: true
+          tag_name: v${{ steps.get_version.outputs.version }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
