@@ -50,6 +50,5 @@ The tool can automatically execute memory management actions when RAM usage exce
 MIT License
 
 ## Acknowledgments
-
-- Uses Microsoft's RAMMap utility from Sysinternals (https://docs.microsoft.com/en-us/sysinternals/downloads/rammap)
-- Built with Rust and Ratatui (https://github.com/tui-rs/ratatui)
+- Uses Microsoft's "[RAMMap utility from Sysinternals](https://docs.microsoft.com/en-us/sysinternals/downloads/rammap)"
+- Built with Rust and "[Ratatui](https://ratatui.rs/)"
