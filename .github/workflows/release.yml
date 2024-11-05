@@ -36,16 +36,10 @@ jobs:
       - name: Build Release
         run: cargo build --release
         
-      - name: Create ZIP
-        run: |
-          cd target/release
-          7z a ../../ram-observer-windows.zip ram-observer-rs.exe
-          cd ../..
-          
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
-          files: ram-observer-windows.zip
+          files: target/release/ram-observer-rs.exe
           generate_release_notes: true
           tag_name: v${{ steps.get_version.outputs.version }}
         env:
