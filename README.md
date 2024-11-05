@@ -2,6 +2,10 @@
 
 A terminal-based RAM monitoring tool written in Rust that provides real-time memory management capabilities using Microsoft's RAMMap utility.
 
+## Demo
+
+![Demo](assets/demo.gif)
+
 ## Features
 
 - 📊 Real-time RAM usage monitoring with visual gauge
@@ -27,7 +31,7 @@ A terminal-based RAM monitoring tool written in Rust that provides real-time mem
 
 ## Auto-Execution
 
-The tool can automatically execute memory management actions when RAM usage exceeds a configured threshold (default: 85%).
+The tool can automatically execute memory management actions when RAM usage exceeds a configured threshold (default: 90%).
 
 ## Installation
 
@@ -36,9 +40,12 @@ The tool can automatically execute memory management actions when RAM usage exce
 3. RAMMap will be automatically downloaded on first use (if not already present)
 
 ## Building from Source
-1. git clone https://github.com/yourusername/ram-observer-rs.git
-2. cd ram-observer-rs
-3. cargo build --release
+
+```bash
+git clone https://github.com/yourusername/ram-observer-rs.git
+cd ram-observer-rs
+cargo build --release
+```
 
 ## Requirements
 
@@ -51,4 +58,4 @@ MIT License
 
 ## Acknowledgments
 - Uses Microsoft's [RAMMap utility from Sysinternals](https://docs.microsoft.com/en-us/sysinternals/downloads/rammap)
-- Built with Rust and [Ratatui](https://ratatui.rs/)
+- Built with [Rust](https://www.rust-lang.org/) and [Ratatui](https://ratatui.rs/)
