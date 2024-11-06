@@ -28,7 +28,7 @@ pub fn handle_key_events(
         }
         
         KeyCode::Enter => {
-            handle_action_execution(ram_monitor, can_process_action, current_time);
+            handle_selected_action(ram_monitor, can_process_action, current_time);
         }
         
         KeyCode::Char('A') if key.modifiers.contains(KeyModifiers::SHIFT) => {
@@ -46,7 +46,7 @@ pub fn handle_key_events(
         }
         
         KeyCode::Char(c) => {
-            handle_number_action(ram_monitor, c, can_process_action, current_time);
+            handle_hotkey_action(ram_monitor, c, can_process_action, current_time);
         }
         
         _ => {}
@@ -78,7 +78,7 @@ pub fn handle_navigation(
     }
 }
 
-pub fn handle_action_execution(
+pub fn handle_selected_action(
     ram_monitor: &mut RamMonitor,
     can_process: bool,
     current_time: Instant,
@@ -100,7 +100,7 @@ pub fn handle_action_execution(
     ram_monitor.last_action = Some(current_time);
 }
 
-pub fn handle_number_action(
+pub fn handle_hotkey_action(
     ram_monitor: &mut RamMonitor,
     key: char,
     can_process: bool,

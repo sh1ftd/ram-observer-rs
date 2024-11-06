@@ -48,7 +48,6 @@ impl RamMonitor {
     }
 
     pub fn run_rammap(&mut self, parameter: &str, action_name: &str) {
-        // First ensure RAMMap exists
         if let Err(e) = self.ensure_rammap_exists() {
             self.add_log(format!("Failed to download RAMMap: {}", e), true);
             return;
