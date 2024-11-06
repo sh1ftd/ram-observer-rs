@@ -18,6 +18,7 @@ pub fn create_layout(frame: &Frame) -> Vec<Rect> {
         .constraints([
             Constraint::Length(2),  // Title
             Constraint::Length(4),  // RAM gauge
+            Constraint::Length(4),  // Page File gauge
             Constraint::Length(7),  // Memory management
             Constraint::Length(4),  // Auto execution
             Constraint::Min(2),     // Logs
@@ -122,4 +123,16 @@ pub fn render_logs(f: &mut Frame, area: Rect, monitor: &RamMonitor) {
             .title_alignment(Alignment::Center)
             .borders(Borders::ALL));
     f.render_widget(list, area);
+}
+
+pub fn render_page_file_gauge(f: &mut Frame, area: Rect, used: f32, total: f32, percentage: f32, color: Color) {
+    let gauge = Gauge::default()
+        .block(Block::default()
+            .title("Page File Usage")
+            .title_alignment(Alignment::Center)
+            .borders(Borders::ALL))
+        .gauge_style(Style::default().fg(color))
+        .ratio((percentage / 100.0) as f64)
+        .label(format!("{:.1}GB / {:.1}GB ({:.1}%)", used, total, percentage));
+    f.render_widget(gauge, area);
 }
