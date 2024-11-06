@@ -11,5 +11,5 @@ pub const AUTO_EXECUTION_COOLDOWN_SECS: u64 = 300;
 
 // RAM thresholds
 pub const DEFAULT_AUTO_THRESHOLD: f32 = 90.0;
-pub const RAM_CRITICAL_THRESHOLD: f32 = 80.0;
-pub const RAM_WARNING_THRESHOLD: f32 = 70.0;
+pub const CRITICAL_THRESHOLD: f32 = 90.0;
+pub const WARNING_THRESHOLD: f32 = 75.0;
