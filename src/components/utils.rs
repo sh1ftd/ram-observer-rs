@@ -2,8 +2,8 @@ use std::time::Duration;
 use ratatui::style::Color;
 
 use crate::components::constants::{
-    RAM_CRITICAL_THRESHOLD,
-    RAM_WARNING_THRESHOLD
+    CRITICAL_THRESHOLD,
+    WARNING_THRESHOLD
 };
 
 pub fn format_timestamp(duration: Duration) -> String {
@@ -38,9 +38,9 @@ pub fn format_size(size_in_bytes: u64) -> String {
 }
 
 pub fn get_usage_color(percentage: f32) -> Color {
-    if percentage >= RAM_CRITICAL_THRESHOLD {
+    if percentage >= CRITICAL_THRESHOLD {
         Color::Red
-    } else if percentage >= RAM_WARNING_THRESHOLD {
+    } else if percentage >= WARNING_THRESHOLD {
         Color::Yellow
     } else {
         Color::Green
