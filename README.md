@@ -27,6 +27,7 @@ A terminal-based RAM monitoring tool written in Rust that provides real-time mem
 - `1-5`: Quick action keys for memory management
 - `↑/↓`: Navigate through actions
 - `Enter`: Execute selected action
+- `Shift + A`: Cycle through auto-execution actions
 - `q`: Quit application
 
 ## Auto-Execution

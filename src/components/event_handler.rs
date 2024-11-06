@@ -1,6 +1,6 @@
 use std::time::Instant;
 
-use crossterm::event::{ KeyCode, KeyEvent };
+use crossterm::event::{ KeyCode, KeyEvent, KeyModifiers };
 
 use crate::components::{
     structs::{ RamMonitor, MemoryAction },
@@ -29,6 +29,13 @@ pub fn handle_key_events(
         
         KeyCode::Enter => {
             handle_action_execution(ram_monitor, can_process_action, current_time);
+        }
+        
+        KeyCode::Char('A') if key.modifiers.contains(KeyModifiers::SHIFT) => {
+            if can_process_nav {
+                ram_monitor.cycle_auto_action();
+                ram_monitor.last_key_press = Some(current_time);
+            }
         }
         
         KeyCode::Char(c) => {

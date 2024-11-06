@@ -69,11 +69,16 @@ impl RamMonitor {
     pub fn check_auto_execution(&mut self, current_percentage: f32) {
         if current_percentage >= self.auto_threshold {
             if self.last_auto_execution.map_or(true, |time| time.elapsed().as_secs() > AUTO_EXECUTION_COOLDOWN_SECS) {
-                let action = MemoryAction::EmptyWorkingSets;
-                let parameter = action.parameter();
-                let display_name = action.display_name();
+                let action = match self.auto_action.as_str() {
+                    "Empty Working Sets" => MemoryAction::EmptyWorkingSets,
+                    "Empty System Working Sets" => MemoryAction::EmptySystemWorkingSets,
+                    "Empty Modified Page Lists" => MemoryAction::EmptyModifiedPageLists,
+                    "Empty Standby List" => MemoryAction::EmptyStandbyList,
+                    "Empty Priority 0 Standby List" => MemoryAction::EmptyPriorityZeroStandbyList,
+                    _ => MemoryAction::EmptyWorkingSets,
+                };
                 
-                self.run_rammap(parameter, display_name);
+                self.run_rammap(action.parameter(), action.display_name());
                 self.last_auto_execution = Some(Instant::now());
             }
         }

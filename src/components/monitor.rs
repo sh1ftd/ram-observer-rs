@@ -61,4 +61,16 @@ impl RamMonitor {
 
         self.check_auto_execution(percentage);
     }
+
+    pub fn cycle_auto_action(&mut self) {
+        let current_action = match self.auto_action.as_str() {
+            "Empty Working Sets" => MemoryAction::EmptySystemWorkingSets,
+            "Empty System Working Sets" => MemoryAction::EmptyModifiedPageLists,
+            "Empty Modified Page Lists" => MemoryAction::EmptyStandbyList,
+            "Empty Standby List" => MemoryAction::EmptyPriorityZeroStandbyList,
+            _ => MemoryAction::EmptyWorkingSets,
+        };
+        self.auto_action = String::from(current_action.display_name());
+        self.add_log(format!("Auto-execution action changed to: {}", self.auto_action), false);
+    }
 }
