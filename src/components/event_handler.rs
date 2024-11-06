@@ -96,7 +96,7 @@ pub fn handle_selected_action(
         _ => return,
     };
 
-    ram_monitor.execute_memory_action(action);
+    ram_monitor.run_rammap(action);
     ram_monitor.last_action = Some(current_time);
 }
 
@@ -120,7 +120,7 @@ pub fn handle_hotkey_action(
     };
 
     if let Some(action) = action {
-        ram_monitor.execute_memory_action(action);
+        ram_monitor.run_rammap(action);
         ram_monitor.last_action = Some(current_time);
     }
 }

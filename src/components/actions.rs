@@ -47,24 +47,6 @@ impl RamMonitor {
         Ok(())
     }
 
-    pub fn run_rammap(&mut self, parameter: &str, action_name: &str) {
-        if let Err(e) = self.ensure_rammap_exists() {
-            self.add_log(format!("Failed to download RAMMap: {}", e), true);
-            return;
-        }
-
-        self.add_log(format!("Executing: {}...", action_name), false);
-        match Command::new("RAMMap64.exe").arg(parameter).spawn() {
-            Ok(_) => {
-                self.add_log(format!("Successfully executed: {}", action_name), false);
-            },
-            Err(e) => {
-                let error_msg = format!("Failed to execute RAMMap64: {}", e);
-                self.add_log(error_msg, true);
-            },
-        }
-    }
-
     pub fn check_auto_execution(&mut self, current_percentage: f32) {
         if current_percentage >= self.auto_threshold {
             if self.last_auto_execution.map_or(true, |time| time.elapsed().as_secs() > AUTO_EXECUTION_COOLDOWN_SECS) {
@@ -77,13 +59,28 @@ impl RamMonitor {
                     _ => MemoryAction::EmptyWorkingSets,
                 };
                 
-                self.run_rammap(action.parameter(), action.display_name());
+                self.run_rammap(action);
                 self.last_auto_execution = Some(Instant::now());
             }
         }
     }
 
-    pub fn execute_memory_action(&mut self, action: MemoryAction) {
-        self.run_rammap(action.parameter(), action.display_name());
+    pub fn run_rammap(&mut self, action: MemoryAction) {
+        if let Err(e) = self.ensure_rammap_exists() {
+            self.add_log(format!("Failed to download RAMMap: {}", e), true);
+            return;
+        }
+
+        let display_name = action.display_name();
+        self.add_log(format!("Executing: {}...", display_name), false);
+        match Command::new("RAMMap64.exe").arg(action.parameter()).spawn() {
+            Ok(_) => {
+                self.add_log(format!("Successfully executed: {}", display_name), false);
+            },
+            Err(e) => {
+                let error_msg = format!("Failed to execute RAMMap64: {}", e);
+                self.add_log(error_msg, true);
+            },
+        }
     }
 }
