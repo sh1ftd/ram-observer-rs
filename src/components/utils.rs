@@ -8,11 +8,11 @@ use crate::components::constants::{
 
 pub fn format_timestamp(duration: Duration) -> String {
     if duration.as_secs() < 60 {
-        format!("{}s ago", duration.as_secs())
+        format!("{:>3}s ago", duration.as_secs())
     } else if duration.as_secs() < 3600 {
-        format!("{}m ago", duration.as_secs() / 60)
+        format!("{:>3}m ago", duration.as_secs() / 60)
     } else {
-        format!("{}h ago", duration.as_secs() / 3600)
+        format!("{:>3}h ago", duration.as_secs() / 3600)
     }
 }
 
