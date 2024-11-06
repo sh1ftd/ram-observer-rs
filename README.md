@@ -28,6 +28,7 @@ A terminal-based RAM monitoring tool written in Rust that provides real-time mem
 - `↑/↓`: Navigate through actions
 - `Enter`: Execute selected action
 - `Shift + A`: Cycle through auto-execution actions
+- `Shift + T`: Cycle auto-execution threshold (50-95%, 5% increments)
 - `q`: Quit application
 
 ## Auto-Execution

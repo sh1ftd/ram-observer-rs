@@ -38,6 +38,13 @@ pub fn handle_key_events(
             }
         }
         
+        KeyCode::Char('T') if key.modifiers.contains(KeyModifiers::SHIFT) => {
+            if can_process_nav {
+                ram_monitor.cycle_auto_threshold();
+                ram_monitor.last_key_press = Some(current_time);
+            }
+        }
+        
         KeyCode::Char(c) => {
             handle_number_action(ram_monitor, c, can_process_action, current_time);
         }

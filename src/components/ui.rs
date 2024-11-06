@@ -1,8 +1,9 @@
 use ratatui::{
     Frame,
     layout::{ Layout, Direction, Constraint, Rect, Alignment},
-    widgets::{ Block, Borders, Paragraph, Gauge, List, ListItem},
-    style::{ Style, Color, Modifier}
+    widgets::{ Block, Borders, Paragraph, Gauge, List, ListItem },
+    style::{ Style, Color, Modifier},
+    text::{ Text, Line, Span },
 };
 
 use crate::components::{
@@ -18,7 +19,7 @@ pub fn create_layout(frame: &Frame) -> Vec<Rect> {
             Constraint::Length(2),  // Title
             Constraint::Length(4),  // RAM gauge
             Constraint::Length(7),  // Memory management
-            Constraint::Length(3),  // Auto execution
+            Constraint::Length(4),  // Auto execution
             Constraint::Min(2),     // Logs
             Constraint::Length(1),  // Bottom margin
         ])
@@ -80,11 +81,18 @@ pub fn render_memory_management(f: &mut Frame, area: Rect, selected_action: usiz
 }
 
 pub fn render_auto_execution(f: &mut Frame, area: Rect, threshold: f32, action: &str) {
-    let text = format!(
-        "Auto Execution: Threshold {}% - Action: {}",
-        threshold,
-        action
-    );
+    let threshold_line = Line::from(vec![
+        Span::raw(format!("Threshold: {}% ", threshold)),
+        Span::styled("(Shift+T to change)", Style::default().fg(Color::DarkGray)),
+    ]);
+
+    let action_line = Line::from(vec![
+        Span::raw(format!("Action: {} ", action)),
+        Span::styled("(Shift+A to change)", Style::default().fg(Color::DarkGray)),
+    ]);
+
+    let text = Text::from(vec![threshold_line, action_line]);
+
     let paragraph = Paragraph::new(text)
         .block(Block::default()
             .title("Auto Execution")

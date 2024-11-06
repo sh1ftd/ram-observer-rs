@@ -73,4 +73,13 @@ impl RamMonitor {
         self.auto_action = String::from(current_action.display_name());
         self.add_log(format!("Auto-execution action changed to: {}", self.auto_action), false);
     }
+
+    pub fn cycle_auto_threshold(&mut self) {
+        self.auto_threshold = if self.auto_threshold >= 95.0 {
+            20.0
+        } else {
+            self.auto_threshold + 5.0
+        };
+        self.add_log(format!("Auto-execution threshold changed to: {}%", self.auto_threshold), false);
+    }
 }
