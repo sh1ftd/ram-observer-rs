@@ -35,9 +35,9 @@ impl RamMonitor {
         };
         
         if self.logs.len() >= LOG_CAPACITY {
-            self.logs.pop_front();
+            self.logs.pop_back();
         }
-        self.logs.push_back(entry);
+        self.logs.push_front(entry);
     }
 
     pub fn get_ram_usage(&mut self) -> (f32, f32, f32) {
