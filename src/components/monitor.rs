@@ -64,12 +64,13 @@ impl RamMonitor {
     pub fn ui(&mut self, f: &mut Frame) {
         let chunks = ui::create_layout(f);
         let (used, total, percentage) = self.get_ram_usage();
-        let gauge_color = utils::get_usage_color(percentage);
+        let ram_gauge_color = utils::get_usage_color(percentage);
         let page_file = self.get_page_file_usage();
 
-        ui::render_ram_gauge(f, chunks[1], used, total, percentage, gauge_color);
+        ui::render_ram_gauge(f, chunks[1], used, total, percentage, ram_gauge_color);
         if let Some((used, total, percentage)) = page_file {
-            ui::render_page_file_gauge(f, chunks[2], used, total, percentage, gauge_color);
+            let page_file_color = utils::get_usage_color(percentage);
+            ui::render_page_file_gauge(f, chunks[2], used, total, percentage, page_file_color);
         }
         ui::render_memory_management(f, chunks[3], self.selected_action);
         ui::render_auto_execution(f, chunks[4], self.auto_threshold, &self.auto_action);
