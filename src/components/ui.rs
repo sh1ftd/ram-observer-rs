@@ -31,24 +31,32 @@ pub fn create_layout(frame: &Frame) -> Vec<Rect> {
 pub fn render_ram_gauge(f: &mut Frame, area: Rect, used: f32, total: f32, percentage: f32, color: Color) {
     let gauge = Gauge::default()
         .block(Block::default()
-            .title("RAM Usage")
+            .title(Span::styled("RAM Usage", Style::default().fg(Color::Cyan)))
             .title_alignment(Alignment::Center)
-            .borders(Borders::ALL))
+            .borders(Borders::ALL)
+            .border_style(Style::default().fg(Color::DarkGray)))
         .gauge_style(Style::default().fg(color))
         .ratio((percentage / 100.0) as f64)
-        .label(format!("{:.1}GB / {:.1}GB ({:.1}%)", used, total, percentage));
+        .label(Span::styled(
+            format!("{:.1}GB / {:.1}GB ({:.1}%)", used, total, percentage),
+            Style::default().fg(Color::White)
+        ));
     f.render_widget(gauge, area);
 }
 
 pub fn render_page_file_gauge(f: &mut Frame, area: Rect, used: f32, total: f32, percentage: f32, color: Color) {
     let gauge = Gauge::default()
         .block(Block::default()
-            .title("Page File Usage")
+            .title(Span::styled("Page File Usage", Style::default().fg(Color::Cyan)))
             .title_alignment(Alignment::Center)
-            .borders(Borders::ALL))
+            .borders(Borders::ALL)
+            .border_style(Style::default().fg(Color::DarkGray)))
         .gauge_style(Style::default().fg(color))
         .ratio((percentage / 100.0) as f64)
-        .label(format!("{:.1}GB / {:.1}GB ({:.1}%)", used, total, percentage));
+        .label(Span::styled(
+            format!("{:.1}GB / {:.1}GB ({:.1}%)", used, total, percentage),
+            Style::default().fg(Color::White)
+        ));
     f.render_widget(gauge, area);
 }
 
@@ -75,9 +83,10 @@ pub fn render_memory_management(f: &mut Frame, area: Rect, selected_action: usiz
 
     let list = List::new(items)
         .block(Block::default()
-            .title("Memory Management")
+            .title(Span::styled("Memory Management", Style::default().fg(Color::Cyan)))
             .title_alignment(Alignment::Center)
-            .borders(Borders::ALL));
+            .borders(Borders::ALL)
+            .border_style(Style::default().fg(Color::DarkGray)));
     f.render_widget(list, area);
 }
 
@@ -96,9 +105,10 @@ pub fn render_auto_execution(f: &mut Frame, area: Rect, threshold: f32, action: 
 
     let paragraph = Paragraph::new(text)
         .block(Block::default()
-            .title("Auto Execution")
+            .title(Span::styled("Auto Execution", Style::default().fg(Color::Cyan)))
             .title_alignment(Alignment::Center)
-            .borders(Borders::ALL));
+            .borders(Borders::ALL)
+            .border_style(Style::default().fg(Color::DarkGray)));
     f.render_widget(paragraph, area);
 }
 
@@ -119,8 +129,9 @@ pub fn render_logs(f: &mut Frame, area: Rect, monitor: &RamMonitor) {
 
     let list = List::new(logs)
         .block(Block::default()
-            .title("Logs")
+            .title(Span::styled("Logs", Style::default().fg(Color::Cyan)))
             .title_alignment(Alignment::Center)
-            .borders(Borders::ALL));
+            .borders(Borders::ALL)
+            .border_style(Style::default().fg(Color::DarkGray)));
     f.render_widget(list, area);
 }
