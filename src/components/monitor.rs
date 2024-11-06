@@ -9,7 +9,7 @@ use std::{
 use crate::components::{
     structs::{RamMonitor, LogEntry, MemoryAction},
     constants::{LOG_CAPACITY, DEFAULT_AUTO_THRESHOLD},
-    utils::{self, bytes_to_gb, calculate_ram_percentage},
+    utils::{self, bytes_to_gb, calculate_percentage},
     ui,
 };
 
@@ -44,7 +44,7 @@ impl RamMonitor {
         self.system.refresh_memory();
         let total = bytes_to_gb(self.system.total_memory());
         let used = bytes_to_gb(self.system.used_memory());
-        let percentage = calculate_ram_percentage(self.system.used_memory(), self.system.total_memory());
+        let percentage = calculate_percentage(self.system.used_memory(), self.system.total_memory());
         (used, total, percentage)
     }
 
@@ -57,7 +57,7 @@ impl RamMonitor {
         let used = self.system.used_swap();
         let total_gb = bytes_to_gb(total);
         let used_gb = bytes_to_gb(used);
-        let percentage = calculate_ram_percentage(used, total);
+        let percentage = calculate_percentage(used, total);
         Some((used_gb, total_gb, percentage))
     }
 
