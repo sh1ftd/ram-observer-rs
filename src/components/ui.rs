@@ -2,7 +2,7 @@ use ratatui::{
     Frame,
     layout::{ Layout, Direction, Constraint, Rect, Alignment},
     widgets::{ Block, Borders, Paragraph, Gauge, List, ListItem },
-    style::{ Style, Color, Modifier},
+    style::{ Style, Color},
     text::{ Text, Line, Span },
 };
 
@@ -16,7 +16,7 @@ pub fn create_layout(frame: &Frame) -> Vec<Rect> {
         .direction(Direction::Vertical)
         .horizontal_margin(2)
         .constraints([
-            Constraint::Length(2),  // Title
+            Constraint::Length(1),  // Top margin
             Constraint::Length(4),  // RAM gauge
             Constraint::Length(4),  // Page File gauge
             Constraint::Length(7),  // Memory management
@@ -28,22 +28,22 @@ pub fn create_layout(frame: &Frame) -> Vec<Rect> {
         .to_vec()
 }
 
-pub fn render_title(f: &mut Frame, area: Rect) {
-    let title = Paragraph::new("RAM Monitor")
-        .alignment(Alignment::Center)
-        .block(Block::default()
-            .borders(Borders::BOTTOM)
-            .border_style(Style::default().fg(Color::Cyan)))
-        .style(Style::default()
-            .fg(Color::Cyan)
-            .add_modifier(Modifier::BOLD));
-    f.render_widget(title, area);
-}
-
 pub fn render_ram_gauge(f: &mut Frame, area: Rect, used: f32, total: f32, percentage: f32, color: Color) {
     let gauge = Gauge::default()
         .block(Block::default()
             .title("RAM Usage")
+            .title_alignment(Alignment::Center)
+            .borders(Borders::ALL))
+        .gauge_style(Style::default().fg(color))
+        .ratio((percentage / 100.0) as f64)
+        .label(format!("{:.1}GB / {:.1}GB ({:.1}%)", used, total, percentage));
+    f.render_widget(gauge, area);
+}
+
+pub fn render_page_file_gauge(f: &mut Frame, area: Rect, used: f32, total: f32, percentage: f32, color: Color) {
+    let gauge = Gauge::default()
+        .block(Block::default()
+            .title("Page File Usage")
             .title_alignment(Alignment::Center)
             .borders(Borders::ALL))
         .gauge_style(Style::default().fg(color))
@@ -123,16 +123,4 @@ pub fn render_logs(f: &mut Frame, area: Rect, monitor: &RamMonitor) {
             .title_alignment(Alignment::Center)
             .borders(Borders::ALL));
     f.render_widget(list, area);
-}
-
-pub fn render_page_file_gauge(f: &mut Frame, area: Rect, used: f32, total: f32, percentage: f32, color: Color) {
-    let gauge = Gauge::default()
-        .block(Block::default()
-            .title("Page File Usage")
-            .title_alignment(Alignment::Center)
-            .borders(Borders::ALL))
-        .gauge_style(Style::default().fg(color))
-        .ratio((percentage / 100.0) as f64)
-        .label(format!("{:.1}GB / {:.1}GB ({:.1}%)", used, total, percentage));
-    f.render_widget(gauge, area);
 }

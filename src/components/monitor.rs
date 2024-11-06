@@ -67,7 +67,6 @@ impl RamMonitor {
         let gauge_color = utils::get_usage_color(percentage);
         let page_file = self.get_page_file_usage();
 
-        ui::render_title(f, chunks[0]);
         ui::render_ram_gauge(f, chunks[1], used, total, percentage, gauge_color);
         if let Some((used, total, percentage)) = page_file {
             ui::render_page_file_gauge(f, chunks[2], used, total, percentage, gauge_color);
