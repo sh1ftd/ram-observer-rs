@@ -8,11 +8,12 @@ A terminal-based RAM monitoring tool written in Rust that provides real-time mem
 
 ## Features
 
-- 📊 Real-time RAM usage monitoring with visual gauge
+- 📊 Real-time RAM and page file usage monitoring with visual gauges
 - 🔄 Automatic memory management based on configurable thresholds
 - 🛠 Direct integration with Microsoft's RAMMap utility
 - ⌨️ Keyboard shortcuts for quick actions
 - 📝 Action logging with timestamps
+- 🔧 Config support
 
 ## Memory Management Actions
 
