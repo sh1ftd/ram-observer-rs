@@ -14,7 +14,7 @@ pub fn handle_key_events(
     ram_monitor: &mut RamMonitor,
     key: KeyEvent,
     current_time: Instant,
-) -> bool {
+) -> bool { // Returns true if the program should exit
     let can_process = |last_time: Option<Instant>, cooldown: u128| -> bool {
         last_time.map_or(true, |last| current_time.duration_since(last).as_millis() > cooldown)
     };
