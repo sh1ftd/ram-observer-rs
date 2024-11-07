@@ -9,26 +9,33 @@ use std::{
 use crate::components::{
     ui,
     memory_management::Commands,
-    structs::{RamMonitor, LogEntry, ActivityState},
     utils::{self, bytes_to_gb, calculate_percentage},
-    constants::{LOG_CAPACITY, DEFAULT_AUTO_THRESHOLD, ACTIVE_TICK_RATE_MS, IDLE_TICK_RATE_MS, IDLE_THRESHOLD_MS}
+    structs::{RamMonitor, LogEntry, ActivityState, Config},
+    constants::{LOG_CAPACITY, ACTIVE_TICK_RATE_MS, IDLE_TICK_RATE_MS, IDLE_THRESHOLD_MS, DEFAULT_AUTO_THRESHOLD}
 };
 
 impl RamMonitor {
     /// Creates a new RamMonitor instance with default settings
     pub fn new() -> Self {
-        Self {
+        let mut monitor = Self {
             system: System::new_all(),
             logs: VecDeque::with_capacity(LOG_CAPACITY),
             auto_threshold: DEFAULT_AUTO_THRESHOLD,
-            auto_action: String::from(Commands::EmptyWorkingSets.display_name()),
+            auto_action: String::from("Empty Working Sets"),
             last_auto_execution: None,
             selected_action: 0,
             last_key_press: None,
             last_action: None,
             last_activity: Instant::now(),
             activity_state: ActivityState::Active,
-        }
+            config: Config::default(),
+        };
+        
+        monitor.config = Config::load(&mut monitor);
+        monitor.auto_threshold = monitor.config.auto_threshold;
+        monitor.auto_action = monitor.config.auto_action.clone();
+        
+        monitor
     }
 
     /// Adds a new log entry, removing oldest if at capacity
@@ -96,18 +103,24 @@ impl RamMonitor {
             "Empty Standby List" => Commands::EmptyPriorityZeroStandbyList,
             _ => Commands::EmptyWorkingSets,
         };
-        self.auto_action = String::from(current_action.display_name());
-        self.add_log(format!("Auto-execution action changed to: {}", self.auto_action), false);
+        let new_action = String::from(current_action.display_name());
+        self.add_log(format!("Auto-execution action changed to: {}", new_action), false);
+        self.auto_action = new_action.clone();
+        self.config.auto_action = new_action;
+        self.save_config();
     }
 
     /// Cycles auto-threshold between 20% and 95% in 5% increments
     pub fn cycle_auto_threshold(&mut self) {
-        self.auto_threshold = if self.auto_threshold >= 95.0 {
+        let new_threshold = if self.auto_threshold >= 95.0 {
             20.0
         } else {
             self.auto_threshold + 5.0
         };
-        self.add_log(format!("Auto-execution threshold changed to: {}%", self.auto_threshold), false);
+        self.add_log(format!("Auto-execution threshold changed to: {}%", new_threshold), false);
+        self.auto_threshold = new_threshold;
+        self.config.auto_threshold = new_threshold;
+        self.save_config();
     }
 
     /// Returns appropriate tick rate based on system activity state
@@ -127,6 +140,20 @@ impl RamMonitor {
             }
             (true, ActivityState::Idle) => IDLE_TICK_RATE_MS,
             (false, ActivityState::Active) => ACTIVE_TICK_RATE_MS,
+        }
+    }
+
+    fn save_config(&mut self) {
+        match self.config.save() {
+            Ok(messages) if !messages.is_empty() => {
+                for (msg, is_error) in messages {
+                    self.add_log(msg, is_error);
+                }
+            }
+            Ok(_) => {}
+            Err(e) => {
+                self.add_log(format!("Failed to save config: {}", e), true);
+            }
         }
     }
 }

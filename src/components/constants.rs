@@ -1,4 +1,5 @@
 pub const LOG_CAPACITY: usize = 100;
+pub const CONFIG_FILE: &str = "ram_observer_config.json";
 
 // Cooldown timings
 pub const NAV_COOLDOWN_MS: u128 = 150;

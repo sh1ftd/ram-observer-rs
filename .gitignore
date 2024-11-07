@@ -1,2 +1,3 @@
 target/
+ram_observer_config.json
 Cargo.lock

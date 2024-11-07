@@ -1,8 +1,15 @@
+use serde::{Deserialize, Serialize};
 use sysinfo::System;
 use std::{
     time::Instant,
     collections::VecDeque
 };
+
+#[derive(Serialize, Deserialize, Clone)]
+pub struct Config {
+    pub auto_threshold: f32,
+    pub auto_action: String,
+}
 
 pub enum ActivityState {
     Active,
@@ -26,4 +33,5 @@ pub struct RamMonitor {
     pub last_action: Option<Instant>,
     pub last_activity: Instant,
     pub activity_state: ActivityState,
+    pub config: Config,
 }

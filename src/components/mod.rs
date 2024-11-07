@@ -5,4 +5,5 @@ pub mod structs;
 pub mod actions;
 pub mod constants;
 pub mod event_handler;
+pub mod config_handler;
 pub mod memory_management;
