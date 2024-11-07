@@ -1,14 +1,15 @@
 use ratatui::{
     Frame,
-    layout::{ Layout, Direction, Constraint, Rect, Alignment},
-    widgets::{ Block, Borders, Paragraph, Gauge, List, ListItem },
     style::{ Style, Color},
     text::{ Text, Line, Span },
+    layout::{ Layout, Direction, Constraint, Rect, Alignment},
+    widgets::{ Block, Borders, Paragraph, Gauge, List, ListItem }
 };
 
 use crate::components::{
+    structs::RamMonitor,
     utils::format_timestamp,
-    structs::{ RamMonitor, MemoryAction }
+    memory_management::Commands
 };
 
 pub fn create_layout(frame: &Frame) -> Vec<Rect> {
@@ -62,11 +63,11 @@ pub fn render_page_file_gauge(f: &mut Frame, area: Rect, used: f32, total: f32, 
 
 pub fn render_memory_management(f: &mut Frame, area: Rect, selected_action: usize) {
     let items: Vec<ListItem> = vec![
-        MemoryAction::EmptyWorkingSets,
-        MemoryAction::EmptySystemWorkingSets,
-        MemoryAction::EmptyModifiedPageLists,
-        MemoryAction::EmptyStandbyList,
-        MemoryAction::EmptyPriorityZeroStandbyList,
+        Commands::EmptyWorkingSets,
+        Commands::EmptySystemWorkingSets,
+        Commands::EmptyModifiedPageLists,
+        Commands::EmptyStandbyList,
+        Commands::EmptyPriorityZeroStandbyList,
     ].iter()
     .enumerate()
     .map(|(i, action)| {

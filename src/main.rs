@@ -2,7 +2,7 @@ mod components;
 
 use std::{
     io::{ self, stdout },
-    time::{ Duration, Instant }
+    time::{ Instant, Duration }
 };
 
 use crossterm::{
@@ -17,37 +17,28 @@ use ratatui::{
 };
 
 use components::{
-    constants::TICK_RATE,
-    structs::RamMonitor,
-    event_handler
+    event_handler,
+    structs::RamMonitor
 };
+
 fn main() -> io::Result<()> {
     enable_raw_mode()?;
     stdout().execute(EnterAlternateScreen)?;
     let mut terminal = Terminal::new(CrosstermBackend::new(stdout()))?;
-
     let mut ram_monitor = RamMonitor::new();
-    let mut last_tick = Instant::now();
 
     loop {
         terminal.draw(|f| ram_monitor.ui(f))?;
 
-        let timeout = TICK_RATE
-            .checked_sub(last_tick.elapsed())
-            .unwrap_or_else(|| Duration::from_secs(0));
+        let current_tick_rate = ram_monitor.get_current_tick_rate();
 
-        if event::poll(timeout)? {
+        if event::poll(Duration::from_millis(current_tick_rate))? {
             if let Event::Key(key) = event::read()? {
-                let current_time = Instant::now();
-                
-                if event_handler::handle_key_events(&mut ram_monitor, key, current_time) {
+                ram_monitor.last_activity = Instant::now();
+                if event_handler::handle_key_events(&mut ram_monitor, key, std::time::Instant::now()) {
                     break;
                 }
             }
-        }
-
-        if last_tick.elapsed() >= TICK_RATE {
-            last_tick = Instant::now();
         }
     }
 

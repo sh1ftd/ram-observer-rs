@@ -1,16 +1,17 @@
-use sysinfo::System;
 use ratatui::Frame;
+use sysinfo::System;
 
 use std::{
-    collections::VecDeque,
     time::Instant,
+    collections::VecDeque
 };
 
 use crate::components::{
-    structs::{RamMonitor, LogEntry, MemoryAction},
-    constants::{LOG_CAPACITY, DEFAULT_AUTO_THRESHOLD},
-    utils::{self, bytes_to_gb, calculate_percentage},
     ui,
+    memory_management::Commands,
+    structs::{RamMonitor, LogEntry, ActivityState},
+    utils::{self, bytes_to_gb, calculate_percentage},
+    constants::{LOG_CAPACITY, DEFAULT_AUTO_THRESHOLD, ACTIVE_TICK_RATE_MS, IDLE_TICK_RATE_MS, IDLE_THRESHOLD_MS}
 };
 
 impl RamMonitor {
@@ -19,11 +20,13 @@ impl RamMonitor {
             system: System::new_all(),
             logs: VecDeque::with_capacity(LOG_CAPACITY),
             auto_threshold: DEFAULT_AUTO_THRESHOLD,
-            auto_action: String::from(MemoryAction::EmptyWorkingSets.display_name()),
+            auto_action: String::from(Commands::EmptyWorkingSets.display_name()),
             last_auto_execution: None,
             selected_action: 0,
             last_key_press: None,
             last_action: None,
+            last_activity: Instant::now(),
+            activity_state: ActivityState::Active,
         }
     }
 
@@ -81,11 +84,11 @@ impl RamMonitor {
 
     pub fn cycle_auto_action(&mut self) {
         let current_action = match self.auto_action.as_str() {
-            "Empty Working Sets" => MemoryAction::EmptySystemWorkingSets,
-            "Empty System Working Sets" => MemoryAction::EmptyModifiedPageLists,
-            "Empty Modified Page Lists" => MemoryAction::EmptyStandbyList,
-            "Empty Standby List" => MemoryAction::EmptyPriorityZeroStandbyList,
-            _ => MemoryAction::EmptyWorkingSets,
+            "Empty Working Sets" => Commands::EmptySystemWorkingSets,
+            "Empty System Working Sets" => Commands::EmptyModifiedPageLists,
+            "Empty Modified Page Lists" => Commands::EmptyStandbyList,
+            "Empty Standby List" => Commands::EmptyPriorityZeroStandbyList,
+            _ => Commands::EmptyWorkingSets,
         };
         self.auto_action = String::from(current_action.display_name());
         self.add_log(format!("Auto-execution action changed to: {}", self.auto_action), false);
@@ -98,5 +101,24 @@ impl RamMonitor {
             self.auto_threshold + 5.0
         };
         self.add_log(format!("Auto-execution threshold changed to: {}%", self.auto_threshold), false);
+    }
+
+    pub fn get_current_tick_rate(&mut self) -> u64 {
+        let is_idle = self.last_activity.elapsed().as_millis() > IDLE_THRESHOLD_MS;
+        
+        match (is_idle, &self.activity_state) {
+            (true, ActivityState::Active) => {
+                self.activity_state = ActivityState::Idle;
+                self.add_log(format!("Entering idle mode (tick rate: {}ms)", IDLE_TICK_RATE_MS), false);
+                IDLE_TICK_RATE_MS
+            }
+            (false, ActivityState::Idle) => {
+                self.activity_state = ActivityState::Active;
+                self.add_log(format!("Switching to active mode (tick rate: {}ms)", ACTIVE_TICK_RATE_MS), false);
+                ACTIVE_TICK_RATE_MS
+            }
+            (true, ActivityState::Idle) => IDLE_TICK_RATE_MS,
+            (false, ActivityState::Active) => ACTIVE_TICK_RATE_MS,
+        }
     }
 }

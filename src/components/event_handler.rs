@@ -1,126 +1,77 @@
 use std::time::Instant;
-
 use crossterm::event::{ KeyCode, KeyEvent, KeyModifiers };
 
 use crate::components::{
-    structs::{ RamMonitor, MemoryAction },
+    structs::RamMonitor,
+    memory_management::Commands,
     constants::{
         NAV_COOLDOWN_MS,
         ACTION_COOLDOWN_MS
     }
 };
 
+// Define a mapping of actions at module level
+const ACTION_MAP: [(char, Commands); 5] = [
+    ('1', Commands::EmptyWorkingSets),
+    ('2', Commands::EmptySystemWorkingSets),
+    ('3', Commands::EmptyModifiedPageLists),
+    ('4', Commands::EmptyStandbyList),
+    ('5', Commands::EmptyPriorityZeroStandbyList),
+];
+
 pub fn handle_key_events(
     ram_monitor: &mut RamMonitor,
     key: KeyEvent,
     current_time: Instant,
-) -> bool {  // returns true if should exit
-    let can_process_nav = ram_monitor.last_key_press
-        .map_or(true, |last| current_time.duration_since(last).as_millis() > NAV_COOLDOWN_MS);
-    let can_process_action = ram_monitor.last_action
-        .map_or(true, |last| current_time.duration_since(last).as_millis() > ACTION_COOLDOWN_MS);
+) -> bool {
+    // Combine cooldown checks into a single function
+    let can_process = |last_time: Option<Instant>, cooldown: u128| -> bool {
+        last_time.map_or(true, |last| current_time.duration_since(last).as_millis() > cooldown)
+    };
 
-    match key.code {
-        KeyCode::Char('q') => return true,
+    let can_nav = can_process(ram_monitor.last_key_press, NAV_COOLDOWN_MS);
+    let can_act = can_process(ram_monitor.last_action, ACTION_COOLDOWN_MS);
+
+    match (key.code, key.modifiers) {
+        (KeyCode::Char('q'), _) => return true,
         
-        KeyCode::Up | KeyCode::Down => {
-            handle_navigation(ram_monitor, key.code, can_process_nav, current_time);
+        (KeyCode::Up, _) if can_nav => {
+            ram_monitor.selected_action = ram_monitor.selected_action.saturating_sub(1);
+            ram_monitor.last_key_press = Some(current_time);
         }
         
-        KeyCode::Enter => {
-            handle_selected_action(ram_monitor, can_process_action, current_time);
+        (KeyCode::Down, _) if can_nav => {
+            ram_monitor.selected_action = (ram_monitor.selected_action + 1).min(ACTION_MAP.len() - 1);
+            ram_monitor.last_key_press = Some(current_time);
         }
         
-        KeyCode::Char('A') if key.modifiers.contains(KeyModifiers::SHIFT) => {
-            if can_process_nav {
-                ram_monitor.cycle_auto_action();
-                ram_monitor.last_key_press = Some(current_time);
+        (KeyCode::Enter, _) if can_act => {
+            if let Some(action) = ACTION_MAP.get(ram_monitor.selected_action) {
+                ram_monitor.run_rammap(action.1);
+                ram_monitor.last_action = Some(current_time);
             }
         }
         
-        KeyCode::Char('T') if key.modifiers.contains(KeyModifiers::SHIFT) => {
-            if can_process_nav {
-                ram_monitor.cycle_auto_threshold();
-                ram_monitor.last_key_press = Some(current_time);
-            }
+        (KeyCode::Char('A'), m) if m.contains(KeyModifiers::SHIFT) && can_nav => {
+            ram_monitor.cycle_auto_action();
+            ram_monitor.last_key_press = Some(current_time);
         }
         
-        KeyCode::Char(c) => {
-            handle_hotkey_action(ram_monitor, c, can_process_action, current_time);
+        (KeyCode::Char('T'), m) if m.contains(KeyModifiers::SHIFT) && can_nav => {
+            ram_monitor.cycle_auto_threshold();
+            ram_monitor.last_key_press = Some(current_time);
+        }
+        
+        (KeyCode::Char(c), _) if can_act => {
+            if let Some((_, command)) = ACTION_MAP.iter()
+                .find(|(key, _)| *key == c) {
+                ram_monitor.run_rammap(*command);
+                ram_monitor.last_action = Some(current_time);
+            }
         }
         
         _ => {}
     }
 
     false
-}
-
-pub fn handle_navigation(
-    ram_monitor: &mut RamMonitor,
-    key_code: KeyCode,
-    can_process: bool,
-    current_time: Instant,
-) {
-    if !can_process {
-        return;
-    }
-
-    match key_code {
-        KeyCode::Up => {
-            ram_monitor.selected_action = ram_monitor.selected_action.saturating_sub(1);
-            ram_monitor.last_key_press = Some(current_time);
-        }
-        KeyCode::Down => {
-            ram_monitor.selected_action = (ram_monitor.selected_action + 1).min(4);
-            ram_monitor.last_key_press = Some(current_time);
-        }
-        _ => {}
-    }
-}
-
-pub fn handle_selected_action(
-    ram_monitor: &mut RamMonitor,
-    can_process: bool,
-    current_time: Instant,
-) {
-    if !can_process {
-        return;
-    }
-
-    let action = match ram_monitor.selected_action {
-        0 => MemoryAction::EmptyWorkingSets,
-        1 => MemoryAction::EmptySystemWorkingSets,
-        2 => MemoryAction::EmptyModifiedPageLists,
-        3 => MemoryAction::EmptyStandbyList,
-        4 => MemoryAction::EmptyPriorityZeroStandbyList,
-        _ => return,
-    };
-
-    ram_monitor.run_rammap(action);
-    ram_monitor.last_action = Some(current_time);
-}
-
-pub fn handle_hotkey_action(
-    ram_monitor: &mut RamMonitor,
-    key: char,
-    can_process: bool,
-    current_time: Instant,
-) {
-    if !can_process {
-        return;
-    }
-
-    let action = match key {
-        '1' => Some(MemoryAction::EmptyWorkingSets),
-        '2' => Some(MemoryAction::EmptySystemWorkingSets),
-        '3' => Some(MemoryAction::EmptyModifiedPageLists),
-        '4' => Some(MemoryAction::EmptyStandbyList),
-        '5' => Some(MemoryAction::EmptyPriorityZeroStandbyList),
-        _ => None,
-    };
-
-    if let Some(action) = action {
-        ram_monitor.run_rammap(action);
-        ram_monitor.last_action = Some(current_time);
-    }
 }

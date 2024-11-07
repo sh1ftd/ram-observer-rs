@@ -1,11 +1,12 @@
 use std::{
-    fs, path::Path, time::Instant, process::Command,
-    io::{ self, Write }
+    io::{ self, Write },
+    fs, path::Path, time::Instant, process::Command
 };
 
 use crate::components::{
-    constants::AUTO_EXECUTION_COOLDOWN_SECS,
-    structs::{ RamMonitor, MemoryAction }
+    structs::RamMonitor,
+    memory_management::Commands,
+    constants::AUTO_EXECUTION_COOLDOWN_SECS
 };
 
 impl RamMonitor {
@@ -51,12 +52,12 @@ impl RamMonitor {
         if current_percentage >= self.auto_threshold {
             if self.last_auto_execution.map_or(true, |time| time.elapsed().as_secs() > AUTO_EXECUTION_COOLDOWN_SECS) {
                 let action = match self.auto_action.as_str() {
-                    "Empty Working Sets" => MemoryAction::EmptyWorkingSets,
-                    "Empty System Working Sets" => MemoryAction::EmptySystemWorkingSets,
-                    "Empty Modified Page Lists" => MemoryAction::EmptyModifiedPageLists,
-                    "Empty Standby List" => MemoryAction::EmptyStandbyList,
-                    "Empty Priority 0 Standby List" => MemoryAction::EmptyPriorityZeroStandbyList,
-                    _ => MemoryAction::EmptyWorkingSets,
+                    "Empty Working Sets" => Commands::EmptyWorkingSets,
+                    "Empty System Working Sets" => Commands::EmptySystemWorkingSets,
+                    "Empty Modified Page Lists" => Commands::EmptyModifiedPageLists,
+                    "Empty Standby List" => Commands::EmptyStandbyList,
+                    "Empty Priority 0 Standby List" => Commands::EmptyPriorityZeroStandbyList,
+                    _ => Commands::EmptyWorkingSets,
                 };
                 
                 self.run_rammap(action);
@@ -65,7 +66,7 @@ impl RamMonitor {
         }
     }
 
-    pub fn run_rammap(&mut self, action: MemoryAction) {
+    pub fn run_rammap(&mut self, action: Commands) {
         if let Err(e) = self.ensure_rammap_exists() {
             self.add_log(format!("Failed to download RAMMap: {}", e), true);
             return;
