@@ -10,17 +10,53 @@ use crate::components::{
     }
 };
 
+/// Determines if enough time has passed since the last action to allow a new action
+/// 
+/// # Arguments
+/// * `last_time` - When the action was last performed (if ever)
+/// * `current_time` - The current timestamp
+/// * `cooldown` - Minimum milliseconds that must pass between actions
+/// 
+/// # Returns
+/// * `true` if enough time has passed (or if this is the first action)
+/// * `false` if not enough time has passed since last action
+fn can_process(last_time: Option<Instant>, current_time: Instant, cooldown: u128) -> bool {
+    match last_time {
+        // If there's no last action, always allow
+        None => true,
+        // If there is a last action, check if enough time has passed
+        Some(last) => {
+            let time_passed = current_time.duration_since(last).as_millis();
+            time_passed > cooldown
+        }
+    }
+}
+
+/// Handles keyboard input events for the RAM monitor
+/// 
+/// # Arguments
+/// * `ram_monitor` - Mutable reference to the RAM monitor state
+/// * `key` - The keyboard event to process
+/// * `current_time` - Current timestamp for cooldown calculations
+/// 
+/// # Returns
+/// * `true` if the program should exit (q key pressed)
+/// * `false` if the program should continue running
+/// 
+/// # Controls
+/// * `q` - Exit program
+/// * `Up/Down` - Navigate through available actions
+/// * `Enter` - Execute selected action
+/// * `Shift + A` - Cycle auto-action setting
+/// * `Shift + T` - Cycle auto-threshold setting
+/// * `1-5` - Hotkeys for direct action execution
 pub fn handle_key_events(
     ram_monitor: &mut RamMonitor,
     key: KeyEvent,
     current_time: Instant,
-) -> bool { // Returns true if the program should exit
-    let can_process = |last_time: Option<Instant>, cooldown: u128| -> bool {
-        last_time.map_or(true, |last| current_time.duration_since(last).as_millis() > cooldown)
-    };
-
-    let can_nav = can_process(ram_monitor.last_key_press, NAV_COOLDOWN_MS);
-    let can_act = can_process(ram_monitor.last_action, ACTION_COOLDOWN_MS);
+) -> bool {
+    let can_nav = can_process(ram_monitor.last_key_press, current_time, NAV_COOLDOWN_MS);
+    let can_act = can_process(ram_monitor.last_action, current_time, ACTION_COOLDOWN_MS);
 
     match (key.code, key.modifiers) {
         // Exit program
