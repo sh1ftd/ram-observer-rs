@@ -10,21 +10,11 @@ use crate::components::{
     }
 };
 
-// Define a mapping of actions at module level
-const ACTION_MAP: [(char, Commands); 5] = [
-    ('1', Commands::EmptyWorkingSets),
-    ('2', Commands::EmptySystemWorkingSets),
-    ('3', Commands::EmptyModifiedPageLists),
-    ('4', Commands::EmptyStandbyList),
-    ('5', Commands::EmptyPriorityZeroStandbyList),
-];
-
 pub fn handle_key_events(
     ram_monitor: &mut RamMonitor,
     key: KeyEvent,
     current_time: Instant,
 ) -> bool {
-    // Combine cooldown checks into a single function
     let can_process = |last_time: Option<Instant>, cooldown: u128| -> bool {
         last_time.map_or(true, |last| current_time.duration_since(last).as_millis() > cooldown)
     };
@@ -33,39 +23,46 @@ pub fn handle_key_events(
     let can_act = can_process(ram_monitor.last_action, ACTION_COOLDOWN_MS);
 
     match (key.code, key.modifiers) {
+        // Exit program
         (KeyCode::Char('q'), _) => return true,
         
+        // Navigate up through actions
         (KeyCode::Up, _) if can_nav => {
-            ram_monitor.selected_action = ram_monitor.selected_action.saturating_sub(1);
+            ram_monitor.selected_action = ram_monitor.selected_action.saturating_sub(1); // Ensure we don't go below 0
             ram_monitor.last_key_press = Some(current_time);
         }
         
+        // Navigate down through actions
         (KeyCode::Down, _) if can_nav => {
-            ram_monitor.selected_action = (ram_monitor.selected_action + 1).min(ACTION_MAP.len() - 1);
+            ram_monitor.selected_action = (ram_monitor.selected_action + 1)
+                .min(Commands::ACTION_MAP.len() - 1); // Ensure we don't go out of bounds
             ram_monitor.last_key_press = Some(current_time);
         }
         
+        // Execute selected action via enter key
         (KeyCode::Enter, _) if can_act => {
-            if let Some(action) = ACTION_MAP.get(ram_monitor.selected_action) {
-                ram_monitor.run_rammap(action.1);
+            if let Some(command) = Commands::from_index(ram_monitor.selected_action) {
+                ram_monitor.run_rammap(command);
                 ram_monitor.last_action = Some(current_time);
             }
         }
         
+        // Cycle auto action
         (KeyCode::Char('A'), m) if m.contains(KeyModifiers::SHIFT) && can_nav => {
             ram_monitor.cycle_auto_action();
             ram_monitor.last_key_press = Some(current_time);
         }
         
+        // Cycle auto threshold
         (KeyCode::Char('T'), m) if m.contains(KeyModifiers::SHIFT) && can_nav => {
             ram_monitor.cycle_auto_threshold();
             ram_monitor.last_key_press = Some(current_time);
         }
         
+        // Execute action via hotkey
         (KeyCode::Char(c), _) if can_act => {
-            if let Some((_, command)) = ACTION_MAP.iter()
-                .find(|(key, _)| *key == c) {
-                ram_monitor.run_rammap(*command);
+            if let Some(command) = Commands::from_char(c) {
+                ram_monitor.run_rammap(command);
                 ram_monitor.last_action = Some(current_time);
             }
         }
