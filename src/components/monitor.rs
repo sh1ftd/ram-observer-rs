@@ -15,6 +15,7 @@ use crate::components::{
 };
 
 impl RamMonitor {
+    /// Creates a new RamMonitor instance with default settings
     pub fn new() -> Self {
         Self {
             system: System::new_all(),
@@ -30,6 +31,7 @@ impl RamMonitor {
         }
     }
 
+    /// Adds a new log entry, removing oldest if at capacity
     pub fn add_log(&mut self, message: String, is_error: bool) {
         let entry = LogEntry {
             message,
@@ -43,6 +45,7 @@ impl RamMonitor {
         self.logs.push_front(entry);
     }
 
+    /// Returns current RAM usage as (used_gb, total_gb, percentage)
     pub fn get_ram_usage(&mut self) -> (f32, f32, f32) {
         self.system.refresh_memory();
         let total = bytes_to_gb(self.system.total_memory());
@@ -51,6 +54,7 @@ impl RamMonitor {
         (used, total, percentage)
     }
 
+    /// Returns page file usage as Option<(used_gb, total_gb, percentage)>
     pub fn get_page_file_usage(&mut self) -> Option<(f32, f32, f32)> {
         self.system.refresh_memory();
         let total = self.system.total_swap();
@@ -64,6 +68,7 @@ impl RamMonitor {
         Some((used_gb, total_gb, percentage))
     }
 
+    /// Renders all UI components and checks auto-execution
     pub fn ui(&mut self, f: &mut Frame) {
         let chunks = ui::create_layout(f);
         let (used, total, percentage) = self.get_ram_usage();
@@ -82,6 +87,7 @@ impl RamMonitor {
         self.check_auto_execution(percentage);
     }
 
+    /// Cycles to the next available auto-execution action
     pub fn cycle_auto_action(&mut self) {
         let current_action = match self.auto_action.as_str() {
             "Empty Working Sets" => Commands::EmptySystemWorkingSets,
@@ -94,6 +100,7 @@ impl RamMonitor {
         self.add_log(format!("Auto-execution action changed to: {}", self.auto_action), false);
     }
 
+    /// Cycles auto-threshold between 20% and 95% in 5% increments
     pub fn cycle_auto_threshold(&mut self) {
         self.auto_threshold = if self.auto_threshold >= 95.0 {
             20.0
@@ -103,6 +110,7 @@ impl RamMonitor {
         self.add_log(format!("Auto-execution threshold changed to: {}%", self.auto_threshold), false);
     }
 
+    /// Returns appropriate tick rate based on system activity state
     pub fn get_current_tick_rate(&mut self) -> u64 {
         let is_idle = self.last_activity.elapsed().as_millis() > IDLE_THRESHOLD_MS;
         

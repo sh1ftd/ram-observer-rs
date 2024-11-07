@@ -10,6 +10,19 @@ use crate::components::{
 };
 
 impl RamMonitor {
+    /// Downloads and extracts RAMMap64.exe if it doesn't exist in the current directory
+    /// 
+    /// # Arguments
+    /// * `self` - Mutable reference to RamMonitor instance
+    /// 
+    /// # Returns
+    /// * `io::Result<()>` - Success or error during download/extraction
+    /// 
+    /// # Process
+    /// 1. Checks if RAMMap64.exe exists
+    /// 2. If not, downloads RAMMap.zip from Sysinternals
+    /// 3. Extracts RAMMap64.exe from the zip
+    /// 4. Cleans up temporary files
     pub fn ensure_rammap_exists(&mut self) -> io::Result<()> {
         if !Path::new("RAMMap64.exe").exists() {
             self.add_log("RAMMap64.exe not found. Downloading...".to_string(), false);
@@ -48,6 +61,16 @@ impl RamMonitor {
         Ok(())
     }
 
+    /// Checks if automatic RAM management should be executed based on current memory usage
+    /// 
+    /// # Arguments
+    /// * `self` - Mutable reference to RamMonitor instance
+    /// * `current_percentage` - Current RAM usage percentage
+    /// 
+    /// # Behavior
+    /// * Executes the configured auto-action if:
+    ///   1. Current RAM usage exceeds auto_threshold
+    ///   2. Enough time has passed since last auto-execution
     pub fn check_auto_execution(&mut self, current_percentage: f32) {
         if current_percentage >= self.auto_threshold {
             if self.last_auto_execution.map_or(true, |time| time.elapsed().as_secs() > AUTO_EXECUTION_COOLDOWN_SECS) {
@@ -66,6 +89,19 @@ impl RamMonitor {
         }
     }
 
+    /// Executes a RAM management command using RAMMap64.exe
+    /// 
+    /// # Arguments
+    /// * `self` - Mutable reference to RamMonitor instance
+    /// * `action` - The RAM management command to execute
+    /// 
+    /// # Process
+    /// 1. Ensures RAMMap64.exe exists
+    /// 2. Executes the specified command
+    /// 3. Logs the result (success or failure)
+    /// 
+    /// # Note
+    /// This function will attempt to download RAMMap64.exe if it's not found
     pub fn run_rammap(&mut self, action: Commands) {
         if let Err(e) = self.ensure_rammap_exists() {
             self.add_log(format!("Failed to download RAMMap: {}", e), true);
