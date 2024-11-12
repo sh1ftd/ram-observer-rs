@@ -1,6 +1,6 @@
 [package]
 name = "ram-observer-rs"
-version = "1.4.1"
+version = "1.4.2"
 edition = "2021"
 license = "MIT"
 authors = ["Shifty <contact@shifty.cloud>"]

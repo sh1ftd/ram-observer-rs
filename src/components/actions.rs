@@ -72,20 +72,18 @@ impl RamMonitor {
     ///   1. Current RAM usage exceeds auto_threshold
     ///   2. Enough time has passed since last auto-execution
     pub fn check_auto_execution(&mut self, current_percentage: f32) {
-        if current_percentage >= self.auto_threshold {
-            if self.last_auto_execution.map_or(true, |time| time.elapsed().as_secs() > AUTO_EXECUTION_COOLDOWN_SECS) {
-                let action = match self.auto_action.as_str() {
-                    "Empty Working Sets" => Commands::EmptyWorkingSets,
-                    "Empty System Working Sets" => Commands::EmptySystemWorkingSets,
-                    "Empty Modified Page Lists" => Commands::EmptyModifiedPageLists,
-                    "Empty Standby List" => Commands::EmptyStandbyList,
-                    "Empty Priority 0 Standby List" => Commands::EmptyPriorityZeroStandbyList,
-                    _ => Commands::EmptyWorkingSets,
-                };
-                
-                self.run_rammap(action);
-                self.last_auto_execution = Some(Instant::now());
-            }
+        if current_percentage >= self.auto_threshold && self.last_auto_execution.map_or(true, |time| time.elapsed().as_secs() > AUTO_EXECUTION_COOLDOWN_SECS) {
+            let action = match self.auto_action.as_str() {
+                "Empty Working Sets" => Commands::EmptyWorkingSets,
+                "Empty System Working Sets" => Commands::EmptySystemWorkingSets,
+                "Empty Modified Page Lists" => Commands::EmptyModifiedPageLists,
+                "Empty Standby List" => Commands::EmptyStandbyList,
+                "Empty Priority 0 Standby List" => Commands::EmptyPriorityZeroStandbyList,
+                _ => Commands::EmptyWorkingSets,
+            };
+            
+            self.run_rammap(action);
+            self.last_auto_execution = Some(Instant::now());
         }
     }
 

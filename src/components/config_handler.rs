@@ -24,7 +24,7 @@ impl Default for Config {
 
 impl Config {
     fn is_valid_threshold(threshold: f32) -> bool {
-        threshold >= 20.0 && threshold <= 95.0
+        (20.0..=95.0).contains(&threshold)
     }
 
     fn is_valid_action(action: &str) -> bool {
@@ -52,7 +52,7 @@ impl Config {
         if !Self::is_valid_action(&config.auto_action) {
             messages.extend([
                 (format!("Invalid action {}, using default", config.auto_action), true),
-                (format!("Using default action: Empty Working Sets"), false),
+                ("Using default action: Empty Working Sets".to_string(), false),
             ]);
             config.auto_action = String::from("Empty Working Sets");
         }

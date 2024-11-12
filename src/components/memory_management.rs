@@ -1,5 +1,6 @@
 /// Represents available RAM management commands that can be executed via RAMMap64.exe
 /// Each variant corresponds to a specific memory clearing operation
+#[allow(clippy::enum_variant_names)]
 #[derive(Clone, Copy)]
 pub enum Commands {
     EmptyWorkingSets,

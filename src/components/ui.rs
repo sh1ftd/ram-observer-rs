@@ -62,12 +62,12 @@ pub fn render_page_file_gauge(f: &mut Frame, area: Rect, used: f32, total: f32, 
 }
 
 pub fn render_memory_management(f: &mut Frame, area: Rect, selected_action: usize) {
-    let items: Vec<ListItem> = vec![
+    let items: Vec<ListItem> = [
         Commands::EmptyWorkingSets,
         Commands::EmptySystemWorkingSets,
         Commands::EmptyModifiedPageLists,
         Commands::EmptyStandbyList,
-        Commands::EmptyPriorityZeroStandbyList,
+        Commands::EmptyPriorityZeroStandbyList
     ].iter()
     .enumerate()
     .map(|(i, action)| {
