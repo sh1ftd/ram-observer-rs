@@ -1,6 +1,6 @@
 [package]
 name = "ram-observer-rs"
-version = "1.4.0"
+version = "1.4.1"
 edition = "2021"
 license = "MIT"
 authors = ["Shifty <contact@shifty.cloud>"]
@@ -13,3 +13,23 @@ reqwest = { version = "0.12.9", features = ["blocking"] }
 zip = "2.2.0"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
+
+[profile.dev]
+overflow-checks = true  # Enable overflow checks
+debug = true            # Enable debug info
+strip = false           # Disable stripping debug info
+panic = "unwind"        # Enable unwinding
+codegen-units = 1024    # Optimize codegen for faster compilation
+incremental = true      # For faster development builds
+opt-level = 0           # Disable optimizations
+lto = false             # Disable link-time optimization
+
+[profile.release]
+overflow-checks = true  # Enable overflow checks
+debug = false           # Disable debug info
+strip = true            # Strip debug info
+panic = "abort"         # Reduce binary size by not including unwinding code
+codegen-units = 1       # Optimize codegen for release
+incremental = false     # For maximum optimization and runtime performance
+opt-level = "z"         # Optimize for size
+lto = "fat"             # Use more aggressive link-time optimizations
