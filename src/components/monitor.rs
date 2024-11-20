@@ -1,17 +1,17 @@
 use ratatui::Frame;
 use sysinfo::System;
 
-use std::{
-    time::Instant,
-    collections::VecDeque
-};
+use std::{collections::VecDeque, time::Instant};
 
 use crate::components::{
-    ui,
+    constants::{
+        ACTIVE_TICK_RATE_MS, DEFAULT_AUTO_THRESHOLD, IDLE_THRESHOLD_MS, IDLE_TICK_RATE_MS,
+        LOG_CAPACITY,
+    },
     memory_management::Commands,
+    structs::{ActivityState, Config, LogEntry, RamMonitor},
+    ui,
     utils::{self, bytes_to_gb, calculate_percentage},
-    structs::{RamMonitor, LogEntry, ActivityState, Config},
-    constants::{LOG_CAPACITY, ACTIVE_TICK_RATE_MS, IDLE_TICK_RATE_MS, IDLE_THRESHOLD_MS, DEFAULT_AUTO_THRESHOLD}
 };
 
 impl RamMonitor {
@@ -30,11 +30,11 @@ impl RamMonitor {
             activity_state: ActivityState::Active,
             config: Config::default(),
         };
-        
+
         monitor.config = Config::load(&mut monitor);
         monitor.auto_threshold = monitor.config.auto_threshold;
         monitor.auto_action = monitor.config.auto_action.clone();
-        
+
         monitor
     }
 
@@ -45,7 +45,7 @@ impl RamMonitor {
             timestamp: Instant::now(),
             is_error,
         };
-        
+
         if self.logs.len() >= LOG_CAPACITY {
             self.logs.pop_back();
         }
@@ -57,7 +57,8 @@ impl RamMonitor {
         self.system.refresh_memory();
         let total = bytes_to_gb(self.system.total_memory());
         let used = bytes_to_gb(self.system.used_memory());
-        let percentage = calculate_percentage(self.system.used_memory(), self.system.total_memory());
+        let percentage =
+            calculate_percentage(self.system.used_memory(), self.system.total_memory());
         (used, total, percentage)
     }
 
@@ -104,7 +105,10 @@ impl RamMonitor {
             _ => Commands::EmptyWorkingSets,
         };
         let new_action = String::from(current_action.display_name());
-        self.add_log(format!("Auto-execution action changed to: {}", new_action), false);
+        self.add_log(
+            format!("Auto-execution action changed to: {}", new_action),
+            false,
+        );
         self.auto_action = new_action.clone();
         self.config.auto_action = new_action;
         self.save_config();
@@ -117,7 +121,10 @@ impl RamMonitor {
         } else {
             self.auto_threshold + 5.0
         };
-        self.add_log(format!("Auto-execution threshold changed to: {}%", new_threshold), false);
+        self.add_log(
+            format!("Auto-execution threshold changed to: {}%", new_threshold),
+            false,
+        );
         self.auto_threshold = new_threshold;
         self.config.auto_threshold = new_threshold;
         self.save_config();
@@ -126,16 +133,25 @@ impl RamMonitor {
     /// Returns appropriate tick rate based on system activity state
     pub fn get_current_tick_rate(&mut self) -> u64 {
         let is_idle = self.last_activity.elapsed().as_millis() > IDLE_THRESHOLD_MS;
-        
+
         match (is_idle, &self.activity_state) {
             (true, ActivityState::Active) => {
                 self.activity_state = ActivityState::Idle;
-                self.add_log(format!("Entering idle mode (tick rate: {}ms)", IDLE_TICK_RATE_MS), false);
+                self.add_log(
+                    format!("Entering idle mode (tick rate: {}ms)", IDLE_TICK_RATE_MS),
+                    false,
+                );
                 IDLE_TICK_RATE_MS
             }
             (false, ActivityState::Idle) => {
                 self.activity_state = ActivityState::Active;
-                self.add_log(format!("Switching to active mode (tick rate: {}ms)", ACTIVE_TICK_RATE_MS), false);
+                self.add_log(
+                    format!(
+                        "Switching to active mode (tick rate: {}ms)",
+                        ACTIVE_TICK_RATE_MS
+                    ),
+                    false,
+                );
                 ACTIVE_TICK_RATE_MS
             }
             (true, ActivityState::Idle) => IDLE_TICK_RATE_MS,
@@ -143,6 +159,7 @@ impl RamMonitor {
         }
     }
 
+    /// Saves the current configuration to disk if there are any changes to the auto-execution settings
     fn save_config(&mut self) {
         match self.config.save() {
             Ok(messages) if !messages.is_empty() => {

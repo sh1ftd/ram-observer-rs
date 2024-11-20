@@ -7,7 +7,7 @@ pub enum Commands {
     EmptySystemWorkingSets,
     EmptyModifiedPageLists,
     EmptyStandbyList,
-    EmptyPriorityZeroStandbyList
+    EmptyPriorityZeroStandbyList,
 }
 
 impl Commands {
@@ -22,7 +22,7 @@ impl Commands {
     ];
 
     /// Returns the command-line parameter for RAMMap64.exe corresponding to this command
-    /// 
+    ///
     /// # Returns
     /// * A string slice containing the RAMMap parameter
     pub fn parameter(&self) -> &str {
@@ -36,7 +36,7 @@ impl Commands {
     }
 
     /// Returns a human-readable name for the command
-    /// 
+    ///
     /// # Returns
     /// * A string slice containing the display name
     pub fn display_name(&self) -> &str {
@@ -50,10 +50,10 @@ impl Commands {
     }
 
     /// Retrieves a command by its index in the ACTION_MAP
-    /// 
+    ///
     /// # Arguments
     /// * `index` - The index to look up
-    /// 
+    ///
     /// # Returns
     /// * `Some(Commands)` if index is valid
     /// * `None` if index is out of bounds
@@ -62,15 +62,16 @@ impl Commands {
     }
 
     /// Retrieves a command by its associated hotkey character
-    /// 
+    ///
     /// # Arguments
     /// * `c` - The character to look up
-    /// 
+    ///
     /// # Returns
     /// * `Some(Commands)` if character matches a hotkey
     /// * `None` if no matching hotkey is found
     pub fn from_char(c: char) -> Option<Self> {
-        Self::ACTION_MAP.iter()
+        Self::ACTION_MAP
+            .iter()
             .find(|(key, _)| *key == c)
             .map(|(_, cmd)| *cmd)
     }

@@ -44,7 +44,6 @@ The tool can automatically execute memory management actions when RAM usage exce
 
 ## Building from Source
 
-
 ```bash
 git clone https://github.com/Shifty-1337/ram-observer-rs.git
 ```
@@ -60,13 +59,14 @@ cargo build --release
 
 ## Requirements
 
-- Windows OS (RAMMap dependency)
-- Internet connection for first-time RAMMap download
+- Windows OS 64-bit (RAMMap dependency)
+- Internet connection for first-time RAMMap download or you can download it manually and place in the same directory as the executable without internet connection
 
 ## License
 
 MIT License
 
 ## Acknowledgments
+
 - Uses Microsoft's [RAMMap utility from Sysinternals](https://docs.microsoft.com/en-us/sysinternals/downloads/rammap)
 - Built with [Rust](https://www.rust-lang.org/) and [Ratatui](https://ratatui.rs/)

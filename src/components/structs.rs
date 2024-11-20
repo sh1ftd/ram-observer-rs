@@ -1,9 +1,6 @@
 use serde::{Deserialize, Serialize};
+use std::{collections::VecDeque, time::Instant};
 use sysinfo::System;
-use std::{
-    time::Instant,
-    collections::VecDeque
-};
 
 #[derive(Serialize, Deserialize, Clone)]
 pub struct Config {

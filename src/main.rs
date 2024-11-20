@@ -1,25 +1,19 @@
 mod components;
 
 use std::{
-    io::{ self, stdout },
-    time::{ Instant, Duration }
+    io::{self, stdout},
+    time::{Duration, Instant},
 };
 
 use crossterm::{
+    event::{self, Event},
+    terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
     ExecutableCommand,
-    event::{ self, Event },
-    terminal::{ disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen }
 };
 
-use ratatui::{
-    Terminal,
-    prelude::CrosstermBackend
-};
+use ratatui::{prelude::CrosstermBackend, Terminal};
 
-use components::{
-    event_handler,
-    structs::RamMonitor
-};
+use components::{event_handler, structs::RamMonitor};
 
 /// RAM Monitor Application Entry Point
 /// Controls:

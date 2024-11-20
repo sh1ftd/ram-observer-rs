@@ -1,22 +1,19 @@
+use crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
 use std::time::Instant;
-use crossterm::event::{ KeyCode, KeyEvent, KeyModifiers };
 
 use crate::components::{
-    structs::RamMonitor,
+    constants::{ACTION_COOLDOWN_MS, NAV_COOLDOWN_MS},
     memory_management::Commands,
-    constants::{
-        NAV_COOLDOWN_MS,
-        ACTION_COOLDOWN_MS
-    }
+    structs::RamMonitor,
 };
 
 /// Determines if enough time has passed since the last action to allow a new action
-/// 
+///
 /// # Arguments
 /// * `last_time` - When the action was last performed (if ever)
 /// * `current_time` - The current timestamp
 /// * `cooldown` - Minimum milliseconds that must pass between actions
-/// 
+///
 /// # Returns
 /// * `true` if enough time has passed (or if this is the first action)
 /// * `false` if not enough time has passed since last action
@@ -33,16 +30,16 @@ fn can_process(last_time: Option<Instant>, current_time: Instant, cooldown: u128
 }
 
 /// Handles keyboard input events for the RAM monitor
-/// 
+///
 /// # Arguments
 /// * `ram_monitor` - Mutable reference to the RAM monitor state
 /// * `key` - The keyboard event to process
 /// * `current_time` - Current timestamp for cooldown calculations
-/// 
+///
 /// # Returns
 /// * `true` if the program should exit (q key pressed)
 /// * `false` if the program should continue running
-/// 
+///
 /// # Controls
 /// * `q` - Exit program
 /// * `Up/Down` - Navigate through available actions
@@ -61,20 +58,20 @@ pub fn handle_key_events(
     match (key.code, key.modifiers) {
         // Exit program
         (KeyCode::Char('q'), _) => return true,
-        
+
         // Navigate up through actions
         (KeyCode::Up, _) if can_nav => {
             ram_monitor.selected_action = ram_monitor.selected_action.saturating_sub(1); // Ensure we don't go below 0
             ram_monitor.last_key_press = Some(current_time);
         }
-        
+
         // Navigate down through actions
         (KeyCode::Down, _) if can_nav => {
-            ram_monitor.selected_action = (ram_monitor.selected_action + 1)
-                .min(Commands::ACTION_MAP.len() - 1); // Ensure we don't go out of bounds
+            ram_monitor.selected_action =
+                (ram_monitor.selected_action + 1).min(Commands::ACTION_MAP.len() - 1); // Ensure we don't go out of bounds
             ram_monitor.last_key_press = Some(current_time);
         }
-        
+
         // Execute selected action via enter key
         (KeyCode::Enter, _) if can_act => {
             if let Some(command) = Commands::from_index(ram_monitor.selected_action) {
@@ -82,19 +79,19 @@ pub fn handle_key_events(
                 ram_monitor.last_action = Some(current_time);
             }
         }
-        
+
         // Cycle auto action
         (KeyCode::Char('A'), m) if m.contains(KeyModifiers::SHIFT) && can_nav => {
             ram_monitor.cycle_auto_action();
             ram_monitor.last_key_press = Some(current_time);
         }
-        
+
         // Cycle auto threshold
         (KeyCode::Char('T'), m) if m.contains(KeyModifiers::SHIFT) && can_nav => {
             ram_monitor.cycle_auto_threshold();
             ram_monitor.last_key_press = Some(current_time);
         }
-        
+
         // Execute action via hotkey
         (KeyCode::Char(c), _) if can_act => {
             if let Some(command) = Commands::from_char(c) {
@@ -102,7 +99,7 @@ pub fn handle_key_events(
                 ram_monitor.last_action = Some(current_time);
             }
         }
-        
+
         _ => {}
     }
 
