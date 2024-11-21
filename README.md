@@ -2,6 +2,17 @@
 
 A terminal-based RAM monitoring tool written in Rust that provides real-time memory management capabilities using Microsoft's RAMMap utility.
 
+## Why
+
+I created this tool to automate Microsoft's RAMMap utility and solve a Windows memory management issue which I was facing. While RAMMap is powerful, it requires manual intervention each time you want to clear different types of memory caches. I wanted a solution that could:
+
+- Monitor RAM usage automatically and execute RAMMap commands when memory usage exceeds certain thresholds
+- Provide quick keyboard shortcuts for common RAMMap operations without opening the GUI
+- Run in the background with minimal resource usage
+- Give a clear terminal-based visualization of current memory status
+
+Beyond solving this practical automation need, this project also served as an excellent opportunity to learn Rust.
+
 ## Demo
 
 ![Demo](assets/demo.gif)
