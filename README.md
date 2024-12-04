@@ -56,7 +56,7 @@ The tool can automatically execute memory management actions when RAM usage exce
 ## Building from Source
 
 ```bash
-git clone https://github.com/Shifty-1337/ram-observer-rs.git
+git clone https://github.com/sh1ftd/ram-observer-rs.git
 ```
 
 ```bash
