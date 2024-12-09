@@ -1,12 +1,21 @@
 fn main() {
-    println!("cargo:rustc-link-arg=/MERGE:.rdata=.text"); // Merge sections
-    println!("cargo:rustc-link-arg=/STACK:8388608"); // Set stack size to 8MB
-    println!("cargo:rustc-link-arg=/DYNAMICBASE"); // Enable ASLR
-    println!("cargo:rustc-link-arg=/CETCOMPAT"); // Enable CET Shadow Stack
-    println!("cargo:rustc-link-arg=/NXCOMPAT"); // Enable DEP
-    println!("cargo:rustc-link-arg=/GUARD:CF"); // Enable Control Flow Guard
-    println!("cargo:rustc-link-arg=/OPT:REF"); // Eliminate unreferenced functions/data
-    println!("cargo:rustc-link-arg=/OPT:ICF"); // Perform identical COMDAT folding
-    println!("cargo:rustc-link-arg=/RELEASE"); // Optimize for release
-    println!("cargo:rustc-link-arg=/LTCG"); // Enable Link-time Code Generation
+    // Basic Configuration
+    println!("cargo:rustc-link-arg=/MERGE:.rdata=.text");
+    println!("cargo:rustc-link-arg=/STACK:8388608");
+
+    // Security Features
+    println!("cargo:rustc-link-arg=/DYNAMICBASE");
+    println!("cargo:rustc-link-arg=/CETCOMPAT");
+    println!("cargo:rustc-link-arg=/NXCOMPAT");
+    println!("cargo:rustc-link-arg=/GUARD:CF");
+    println!("cargo:rustc-link-arg=/HIGHENTROPYVA");
+
+    // Optimization Settings
+    println!("cargo:rustc-link-arg=/OPT:REF,ICF,LBR");
+    println!("cargo:rustc-link-arg=/LTCG");
+    println!("cargo:rustc-link-arg=/INCREMENTAL:NO");
+
+    // Disable debug information
+    println!("cargo:rustc-link-arg=/DEBUG:NONE");
+    println!("cargo:rustc-link-arg=/NOCOFFGRPINFO");
 }
