@@ -111,7 +111,7 @@ impl RamMonitor {
         );
         self.auto_action = new_action.clone();
         self.config.auto_action = new_action;
-        self.save_config();
+        self.handle_config_save();
     }
 
     /// Cycles auto-threshold between 20% and 95% in 5% increments
@@ -127,7 +127,7 @@ impl RamMonitor {
         );
         self.auto_threshold = new_threshold;
         self.config.auto_threshold = new_threshold;
-        self.save_config();
+        self.handle_config_save();
     }
 
     /// Returns appropriate tick rate based on system activity state
@@ -160,8 +160,8 @@ impl RamMonitor {
     }
 
     /// Saves the current configuration to disk if there are any changes to the auto-execution settings
-    fn save_config(&mut self) {
-        match self.config.save() {
+    fn handle_config_save(&mut self) {
+        match self.config.save_to_disk() {
             Ok(messages) if !messages.is_empty() => {
                 for (msg, is_error) in messages {
                     self.add_log(msg, is_error);

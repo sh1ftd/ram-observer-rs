@@ -126,7 +126,7 @@ impl Config {
     }
 
     /// Saves current configuration to file after validation
-    pub fn save(&self) -> ConfigResult<Vec<ValidationMessage>> {
+    pub fn save_to_disk(&self) -> ConfigResult<Vec<ValidationMessage>> {
         let mut config = self.clone();
         let messages = Self::validate_config(&mut config);
         let config_json = serde_json::to_string_pretty(&config)?;
