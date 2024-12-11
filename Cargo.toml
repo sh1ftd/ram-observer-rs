@@ -1,6 +1,8 @@
+cargo-features = ["profile-rustflags"]
+
 [package]
 name = "ram-observer-rs"
-version = "1.4.4"
+version = "1.4.5"
 edition = "2021"
 license = "MIT"
 authors = ["Shifty <contact@shifty.cloud>"]
@@ -33,3 +35,10 @@ codegen-units = 1
 incremental = false
 opt-level = "z"
 lto = "fat"
+rustflags = ["-C", "target-cpu=native", "-C", "strip=symbols"]
+
+[profile.release.package."*"]
+overflow-checks = true
+debug = false
+codegen-units = 1
+opt-level = "z"
