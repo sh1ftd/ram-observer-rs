@@ -35,7 +35,7 @@ codegen-units = 1
 incremental = false
 opt-level = "z"
 lto = "fat"
-rustflags = ["-C", "target-cpu=native", "-C", "strip=symbols"]
+rustflags = ["-C", "target-cpu=x86-64", "-C", "strip=symbols"]
 
 [profile.release.package."*"]
 overflow-checks = true
