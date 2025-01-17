@@ -79,9 +79,10 @@ impl RamMonitor {
     ///   2. Enough time has passed since last auto-execution
     pub fn check_auto_execution(&mut self, current_percentage: f32) {
         if current_percentage >= self.auto_threshold
-            && self.last_auto_execution.map_or(true, |time| {
-                time.elapsed().as_secs() > AUTO_EXECUTION_COOLDOWN_SECS
-            })
+            && self
+                .last_auto_execution
+                .map(|time| time.elapsed().as_secs() > AUTO_EXECUTION_COOLDOWN_SECS)
+                .unwrap_or(true)
         {
             let action = match self.auto_action.as_str() {
                 "Empty Working Sets" => Commands::EmptyWorkingSets,
