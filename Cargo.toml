@@ -1,44 +1,44 @@
 cargo-features = ["profile-rustflags"]
 
 [package]
-name = "ram-observer-rs"
-version = "1.4.6"
-edition = "2021"
-license = "MIT"
-authors = ["Shifty <contact@shifty.cloud>"]
+    name = "ram-observer-rs"
+    version = "1.4.6"
+    edition = "2021"
+    license = "MIT"
+    authors = ["Shifty <contact@shifty.cloud>"]
 
 [dependencies]
-crossterm = "0.28.1"
-ratatui = "0.29.0"
-sysinfo = "0.33.0"
-zip = "2.2.0"
-serde_json = "1.0"
-serde = { version = "1.0", features = ["derive"] }
-reqwest = { version = "0.12.9", features = ["blocking"] }
+    crossterm = "0.28.1"
+    ratatui = "0.29.0"
+    sysinfo = "0.33.0"
+    zip = "2.2.0"
+    serde_json = "1.0"
+    serde = { version = "1.0", features = ["derive"] }
+    reqwest = { version = "0.12.9", features = ["blocking"] }
 
 [profile.dev]
-overflow-checks = true
-debug = true
-strip = false
-panic = "unwind"
-codegen-units = 1024
-incremental = true
-opt-level = 0
-lto = false
+    overflow-checks = true
+    debug = true
+    strip = false
+    panic = "unwind"
+    codegen-units = 1024
+    incremental = true
+    opt-level = 0
+    lto = false
 
 [profile.release]
-overflow-checks = true
-debug = false
-strip = "symbols"
-panic = "abort"
-codegen-units = 1
-incremental = false
-opt-level = "z"
-lto = "fat"
-rustflags = ["-C", "target-cpu=x86-64", "-C", "strip=symbols"]
+    overflow-checks = true
+    debug = false
+    strip = "symbols"
+    panic = "abort"
+    codegen-units = 1
+    incremental = false
+    opt-level = "z"
+    lto = "fat"
+    rustflags = ["-C", "target-cpu=x86-64", "-C", "strip=symbols"]
 
 [profile.release.package."*"]
-overflow-checks = true
-debug = false
-codegen-units = 1
-opt-level = "z"
+    overflow-checks = true
+    debug = false
+    codegen-units = 1
+    opt-level = "z"
