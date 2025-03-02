@@ -2,7 +2,7 @@ cargo-features = ["profile-rustflags"]
 
 [package]
     name = "ram-observer-rs"
-    version = "1.4.6"
+    version = "1.4.7"
     edition = "2021"
     license = "MIT"
     authors = ["Shifty <contact@shifty.cloud>"]
