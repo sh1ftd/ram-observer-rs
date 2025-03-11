@@ -73,10 +73,6 @@ cargo build --release
 - Windows OS 64-bit (RAMMap dependency)
 - Internet connection for first-time RAMMap download or you can download it manually and place in the same directory as the executable without internet connection
 
-## License
-
-MIT License
-
 ## Acknowledgments
 
 - Uses Microsoft's [RAMMap utility from Sysinternals](https://docs.microsoft.com/en-us/sysinternals/downloads/rammap)
