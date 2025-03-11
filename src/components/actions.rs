@@ -31,11 +31,11 @@ impl RamMonitor {
             // Download the zip file
             let response =
                 reqwest::blocking::get("https://download.sysinternals.com/files/RAMMap.zip")
-                    .map_err(|e| io::Error::new(io::ErrorKind::Other, e.to_string()))?;
+                    .map_err(|e| io::Error::other(e.to_string()))?;
 
             let bytes = response
                 .bytes()
-                .map_err(|e| io::Error::new(io::ErrorKind::Other, e.to_string()))?;
+                .map_err(|e| io::Error::other(e.to_string()))?;
 
             // Save zip file temporarily
             let mut temp_file = fs::File::create("rammap_temp.zip")?;
@@ -44,13 +44,13 @@ impl RamMonitor {
             // Extract RAMMap64.exe from the zip
             let file = fs::File::open("rammap_temp.zip")?;
             let mut archive = zip::ZipArchive::new(file)
-                .map_err(|e| io::Error::new(io::ErrorKind::Other, e.to_string()))?;
+                .map_err(|e| io::Error::other(e.to_string()))?;
 
             // Iterate through the zip entries
             for i in 0..archive.len() {
                 let mut file = archive
                     .by_index(i)
-                    .map_err(|e| io::Error::new(io::ErrorKind::Other, e.to_string()))?;
+                    .map_err(|e| io::Error::other(e.to_string()))?;
 
                 // Find and extract RAMMap64.exe
                 if file.name() == "RAMMap64.exe" {
