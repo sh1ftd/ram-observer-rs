@@ -2,19 +2,40 @@ cargo-features = ["profile-rustflags"]
 
 [package]
     name = "ram-observer-rs"
-    version = "1.5.1"
+    version = "1.5.2"
     edition = "2024"
     license = "MIT"
     authors = ["Shifty <contact@shifty.cloud>"]
 
+[lints.rust]
+    # Security
+    non_ascii_idents = "forbid"
+
+    # Deny old style Rust
+    rust_2018_idioms = { level = "deny", priority = -1 }
+    macro_use_extern_crate = "deny"
+    absolute_paths_not_starting_with_crate = "deny"
+
+    # Easy to read style and opinionated best practices
+    explicit_outlives_requirements = "warn"
+    missing_abi = "deny"
+    unused_lifetimes = "warn"
+    unused_macro_rules = "warn"
+    single_use_lifetimes = "warn"
+
+[lints.clippy]
+    unused_async = "deny"
+    undocumented_unsafe_blocks = "warn"
+    implicit_clone = "warn"
+
 [dependencies]
-    crossterm = "0.28.1"
+    crossterm = "0.29.0"
     ratatui = "0.29.0"
-    sysinfo = "0.33.0"
+    sysinfo = "0.34.2"
     zip = "2.2.0"
     serde_json = "1.0.140"
     serde = { version = "1.0.219", features = ["derive"] }
-    reqwest = { version = "0.12.9", features = ["blocking"] }
+    reqwest = { version = "0.12.15", features = ["blocking"] }
 
 [profile.dev]
     overflow-checks = true

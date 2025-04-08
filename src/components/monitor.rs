@@ -77,7 +77,7 @@ impl RamMonitor {
     }
 
     /// Renders all UI components and checks auto-execution
-    pub fn ui(&mut self, f: &mut Frame) {
+    pub fn ui(&mut self, f: &mut Frame<'_>) {
         let chunks = ui::create_layout(f);
         let (used, total, percentage) = self.get_ram_usage();
         let ram_gauge_color = utils::get_usage_color(percentage);

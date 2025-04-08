@@ -10,7 +10,7 @@ use crate::components::{
     memory_management::Commands, structs::RamMonitor, utils::format_timestamp,
 };
 
-pub fn create_layout(frame: &Frame) -> Vec<Rect> {
+pub fn create_layout(frame: &Frame<'_>) -> Vec<Rect> {
     Layout::default()
         .direction(Direction::Vertical)
         .horizontal_margin(2)
@@ -28,7 +28,7 @@ pub fn create_layout(frame: &Frame) -> Vec<Rect> {
 }
 
 pub fn render_ram_gauge(
-    f: &mut Frame,
+    f: &mut Frame<'_>,
     area: Rect,
     used: f32,
     total: f32,
@@ -53,7 +53,7 @@ pub fn render_ram_gauge(
 }
 
 pub fn render_page_file_gauge(
-    f: &mut Frame,
+    f: &mut Frame<'_>,
     area: Rect,
     used: f32,
     total: f32,
@@ -80,8 +80,8 @@ pub fn render_page_file_gauge(
     f.render_widget(gauge, area);
 }
 
-pub fn render_memory_management(f: &mut Frame, area: Rect, selected_action: usize) {
-    let items: Vec<ListItem> = [
+pub fn render_memory_management(f: &mut Frame<'_>, area: Rect, selected_action: usize) {
+    let items: Vec<ListItem<'_>> = [
         Commands::EmptyWorkingSets,
         Commands::EmptySystemWorkingSets,
         Commands::EmptyModifiedPageLists,
@@ -115,7 +115,7 @@ pub fn render_memory_management(f: &mut Frame, area: Rect, selected_action: usiz
     f.render_widget(list, area);
 }
 
-pub fn render_auto_execution(f: &mut Frame, area: Rect, threshold: f32, action: &str) {
+pub fn render_auto_execution(f: &mut Frame<'_>, area: Rect, threshold: f32, action: &str) {
     let threshold_line = Line::from(vec![
         Span::raw(format!("Threshold: {}% ", threshold)),
         Span::styled("(Shift+T to change)", Style::default().fg(Color::DarkGray)),
@@ -141,8 +141,8 @@ pub fn render_auto_execution(f: &mut Frame, area: Rect, threshold: f32, action: 
     f.render_widget(paragraph, area);
 }
 
-pub fn render_logs(f: &mut Frame, area: Rect, monitor: &RamMonitor) {
-    let logs: Vec<ListItem> = monitor
+pub fn render_logs(f: &mut Frame<'_>, area: Rect, monitor: &RamMonitor) {
+    let logs: Vec<ListItem<'_>> = monitor
         .logs
         .iter()
         .map(|log| {
