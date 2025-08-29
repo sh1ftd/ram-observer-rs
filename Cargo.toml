@@ -42,7 +42,7 @@ cargo-features = ["profile-rustflags"]
     debug = true
     strip = false
     panic = "unwind"
-    codegen-units = 1024
+    codegen-units = 256
     incremental = true
     opt-level = 0
     lto = false
@@ -54,7 +54,7 @@ cargo-features = ["profile-rustflags"]
     panic = "abort"
     codegen-units = 1
     incremental = false
-    opt-level = "z"
+    opt-level = 3
     lto = "fat"
     rustflags = ["-C", "target-cpu=x86-64", "-C", "strip=symbols"]
 
@@ -62,4 +62,4 @@ cargo-features = ["profile-rustflags"]
     overflow-checks = true
     debug = false
     codegen-units = 1
-    opt-level = "z"
+    opt-level = 3
