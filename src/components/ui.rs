@@ -46,7 +46,7 @@ pub fn render_ram_gauge(
         .gauge_style(Style::default().fg(color))
         .ratio((percentage / 100.0) as f64)
         .label(Span::styled(
-            format!("{:.1}GB / {:.1}GB ({:.1}%)", used, total, percentage),
+            format!("{used:.1}GB / {total:.1}GB ({percentage:.1}%)"),
             Style::default().fg(Color::White),
         ));
     f.render_widget(gauge, area);
@@ -74,7 +74,7 @@ pub fn render_page_file_gauge(
         .gauge_style(Style::default().fg(color))
         .ratio((percentage / 100.0) as f64)
         .label(Span::styled(
-            format!("{:.1}GB / {:.1}GB ({:.1}%)", used, total, percentage),
+            format!("{used:.1}GB / {total:.1}GB ({percentage:.1}%)"),
             Style::default().fg(Color::White),
         ));
     f.render_widget(gauge, area);
@@ -117,12 +117,12 @@ pub fn render_memory_management(f: &mut Frame<'_>, area: Rect, selected_action: 
 
 pub fn render_auto_execution(f: &mut Frame<'_>, area: Rect, threshold: f32, action: &str) {
     let threshold_line = Line::from(vec![
-        Span::raw(format!("Threshold: {}% ", threshold)),
+        Span::raw(format!("Threshold: {threshold}% ")),
         Span::styled("(Shift+T to change)", Style::default().fg(Color::DarkGray)),
     ]);
 
     let action_line = Line::from(vec![
-        Span::raw(format!("Action: {} ", action)),
+        Span::raw(format!("Action: {action} ")),
         Span::styled("(Shift+A to change)", Style::default().fg(Color::DarkGray)),
     ]);
 

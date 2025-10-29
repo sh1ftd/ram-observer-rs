@@ -62,7 +62,7 @@ impl Config {
                     true,
                 ),
                 (
-                    format!("Using default threshold: {}%", DEFAULT_AUTO_THRESHOLD),
+                    format!("Using default threshold: {DEFAULT_AUTO_THRESHOLD}%"),
                     false,
                 ),
             ]);
@@ -101,7 +101,7 @@ impl Config {
         fs::read_to_string(CONFIG_FILE)
             .map_err(|e| {
                 ram_monitor.add_log(
-                    format!("Error reading config file: {}, using defaults", e),
+                    format!("Error reading config file: {e}, using defaults"),
                     true,
                 );
                 e
@@ -109,7 +109,7 @@ impl Config {
             .and_then(|contents| {
                 serde_json::from_str(&contents).map_err(|e| {
                     ram_monitor.add_log(
-                        format!("Error parsing config file: {}, using defaults", e),
+                        format!("Error parsing config file: {e}, using defaults"),
                         true,
                     );
                     Error::new(ErrorKind::InvalidData, e)

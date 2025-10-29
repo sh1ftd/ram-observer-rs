@@ -106,7 +106,7 @@ impl RamMonitor {
         };
         let new_action = String::from(current_action.display_name());
         self.add_log(
-            format!("Auto-execution action changed to: {}", new_action),
+            format!("Auto-execution action changed to: {new_action}"),
             false,
         );
         self.auto_action = new_action.clone();
@@ -122,7 +122,7 @@ impl RamMonitor {
             self.auto_threshold + 5.0
         };
         self.add_log(
-            format!("Auto-execution threshold changed to: {}%", new_threshold),
+            format!("Auto-execution threshold changed to: {new_threshold}%"),
             false,
         );
         self.auto_threshold = new_threshold;
@@ -138,7 +138,7 @@ impl RamMonitor {
             (true, ActivityState::Active) => {
                 self.activity_state = ActivityState::Idle;
                 self.add_log(
-                    format!("Entering idle mode (tick rate: {}ms)", IDLE_TICK_RATE_MS),
+                    format!("Entering idle mode (tick rate: {IDLE_TICK_RATE_MS}ms)"),
                     false,
                 );
                 IDLE_TICK_RATE_MS
@@ -147,8 +147,7 @@ impl RamMonitor {
                 self.activity_state = ActivityState::Active;
                 self.add_log(
                     format!(
-                        "Switching to active mode (tick rate: {}ms)",
-                        ACTIVE_TICK_RATE_MS
+                        "Switching to active mode (tick rate: {ACTIVE_TICK_RATE_MS}ms)"
                     ),
                     false,
                 );
@@ -169,7 +168,7 @@ impl RamMonitor {
             }
             Ok(_) => {}
             Err(e) => {
-                self.add_log(format!("Failed to save config: {}", e), true);
+                self.add_log(format!("Failed to save config: {e}"), true);
             }
         }
     }

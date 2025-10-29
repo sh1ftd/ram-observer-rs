@@ -39,14 +39,13 @@ fn main() -> io::Result<()> {
         let current_tick_rate = ram_monitor.get_current_tick_rate();
 
         // Handle input events
-        if event::poll(Duration::from_millis(current_tick_rate))? {
-            if let Event::Key(key) = event::read()? {
+        if event::poll(Duration::from_millis(current_tick_rate))?
+            && let Event::Key(key) = event::read()? {
                 ram_monitor.last_activity = Instant::now();
                 if event_handler::handle_key_events(&mut ram_monitor, key, Instant::now()) {
                     break;
                 }
             }
-        }
     }
 
     // Cleanup and restore terminal

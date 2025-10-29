@@ -113,19 +113,19 @@ impl RamMonitor {
     /// This function will attempt to download RAMMap64.exe if it's not found
     pub fn run_rammap(&mut self, action: Commands) {
         if let Err(e) = self.ensure_rammap_exists() {
-            self.add_log(format!("Failed to download RAMMap: {}", e), true);
+            self.add_log(format!("Failed to download RAMMap: {e}"), true);
             return;
         }
 
         // Execute the command
         let display_name = action.display_name();
-        self.add_log(format!("Executing: {}...", display_name), false);
+        self.add_log(format!("Executing: {display_name}..."), false);
         match Command::new("RAMMap64.exe").arg(action.parameter()).spawn() {
             Ok(_) => {
-                self.add_log(format!("Successfully executed: {}", display_name), false);
+                self.add_log(format!("Successfully executed: {display_name}"), false);
             }
             Err(e) => {
-                let error_msg = format!("Failed to execute RAMMap64: {}", e);
+                let error_msg = format!("Failed to execute RAMMap64: {e}");
                 self.add_log(error_msg, true);
             }
         }
