@@ -6,12 +6,12 @@ use std::{
 };
 
 use crossterm::{
-    event::{self, Event},
-    terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
     ExecutableCommand,
+    event::{self, Event},
+    terminal::{EnterAlternateScreen, LeaveAlternateScreen, disable_raw_mode, enable_raw_mode},
 };
 
-use ratatui::{prelude::CrosstermBackend, Terminal};
+use ratatui::{Terminal, prelude::CrosstermBackend};
 
 use components::{event_handler, structs::RamMonitor};
 
@@ -40,12 +40,13 @@ fn main() -> io::Result<()> {
 
         // Handle input events
         if event::poll(Duration::from_millis(current_tick_rate))?
-            && let Event::Key(key) = event::read()? {
-                ram_monitor.last_activity = Instant::now();
-                if event_handler::handle_key_events(&mut ram_monitor, key, Instant::now()) {
-                    break;
-                }
+            && let Event::Key(key) = event::read()?
+        {
+            ram_monitor.last_activity = Instant::now();
+            if event_handler::handle_key_events(&mut ram_monitor, key, Instant::now()) {
+                break;
             }
+        }
     }
 
     // Cleanup and restore terminal

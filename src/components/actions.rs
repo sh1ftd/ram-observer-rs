@@ -43,8 +43,8 @@ impl RamMonitor {
 
             // Extract RAMMap64.exe from the zip
             let file = fs::File::open("rammap_temp.zip")?;
-            let mut archive = zip::ZipArchive::new(file)
-                .map_err(|e| io::Error::other(e.to_string()))?;
+            let mut archive =
+                zip::ZipArchive::new(file).map_err(|e| io::Error::other(e.to_string()))?;
 
             // Iterate through the zip entries
             for i in 0..archive.len() {

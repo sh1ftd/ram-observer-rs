@@ -146,9 +146,7 @@ impl RamMonitor {
             (false, ActivityState::Idle) => {
                 self.activity_state = ActivityState::Active;
                 self.add_log(
-                    format!(
-                        "Switching to active mode (tick rate: {ACTIVE_TICK_RATE_MS}ms)"
-                    ),
+                    format!("Switching to active mode (tick rate: {ACTIVE_TICK_RATE_MS}ms)"),
                     false,
                 );
                 ACTIVE_TICK_RATE_MS
