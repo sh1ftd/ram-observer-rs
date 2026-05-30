@@ -22,7 +22,7 @@ Beyond solving this practical automation need, this project also served as an ex
 - Real-time RAM and page file usage monitoring with visual gauges
 - Automatic memory management based on configurable thresholds
 - Direct integration with Microsoft's RAMMap utility
-- ⌨Keyboard shortcuts for quick actions
+- Keyboard shortcuts for quick actions
 - Action logging with timestamps
 - Config support
 
